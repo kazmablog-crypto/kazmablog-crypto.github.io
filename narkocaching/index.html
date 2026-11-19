@@ -49,7 +49,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   padding:16px 26px;font-size:1.35rem;box-shadow:0 0 28px var(--red-glow)}
 .cta:hover{filter:brightness(1.1)}
 .figure{position:relative;height:100%;min-height:380px}
-.figure svg{position:absolute;right:-30px;top:-20px;width:120%;height:auto;max-width:520px}
+.figure img{position:absolute;right:-40px;top:-40px;width:115%;max-width:560px;height:auto;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 35%),linear-gradient(to bottom,transparent,#000 22%,#000 75%,transparent);
+  -webkit-mask-composite:source-in;
+          mask-image:linear-gradient(to right,transparent,#000 35%),linear-gradient(to bottom,transparent,#000 22%,#000 75%,transparent);
+          mask-composite:intersect}
 
 /* features */
 .features{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:14px;
@@ -139,8 +143,8 @@ body.locked{overflow:hidden}
 
 @media (max-width:720px){
   .hero{grid-template-columns:1fr}
-  .figure{position:absolute;inset:0 -16px auto auto;width:62%;min-height:0;height:420px;z-index:-1;opacity:.9}
-  .figure svg{right:-20px;top:20px;width:150%}
+  .figure{position:absolute;inset:0 -16px auto auto;width:68%;min-height:0;height:460px;z-index:-1}
+  .figure img{right:-30px;top:10px;width:125%;opacity:.85}
   .hero p{max-width:15rem;font-size:1.05rem}
   .features{grid-template-columns:repeat(3,1fr)}
   .feat{flex-direction:column;align-items:flex-start;padding:14px 10px;gap:6px}
@@ -188,27 +192,7 @@ body.locked{overflow:hidden}
     <button class="cta display" data-hook="cta">Zobrazit nabídku <span aria-hidden="true">→</span></button>
   </div>
   <div class="figure" aria-hidden="true">
-    <svg viewBox="0 0 400 440">
-      <defs>
-        <radialGradient id="hood" cx="50%" cy="30%" r="70%">
-          <stop offset="0" stop-color="#3a3a3f"/><stop offset=".55" stop-color="#1a1a1d"/><stop offset="1" stop-color="#0b0b0c"/>
-        </radialGradient>
-        <radialGradient id="face" cx="50%" cy="45%" r="50%">
-          <stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#050505"/>
-        </radialGradient>
-        <linearGradient id="bag" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#ffffff" stop-opacity=".35"/><stop offset="1" stop-color="#d9d9d9" stop-opacity=".2"/>
-        </linearGradient>
-      </defs>
-      <path d="M200 20c-80 0-130 70-130 150 0 40 10 70 25 95L40 440h320l-55-175c15-25 25-55 25-95 0-80-50-150-130-150z" fill="url(#hood)"/>
-      <ellipse cx="205" cy="165" rx="70" ry="85" fill="url(#face)" opacity=".85"/>
-      <path d="M90 300q-10 60 0 140h70q10-60 20-110z" fill="#141416"/>
-      <!-- hand + bag -->
-      <path d="M95 255q30-25 70-10l15 30q-20 15-55 15-25 0-30-35z" fill="#2b2420"/>
-      <rect x="120" y="270" width="110" height="120" rx="6" fill="url(#bag)" stroke="#fff" stroke-opacity=".5" transform="rotate(8 175 330)"/>
-      <rect x="120" y="270" width="110" height="10" fill="#fff" fill-opacity=".45" transform="rotate(8 175 330)"/>
-      <path d="M128 340q45-30 95 5v40h-95z" fill="#f4f4f4" fill-opacity=".9" transform="rotate(8 175 330)"/>
-    </svg>
+    <img src="hero.jpg" alt="" width="880" height="1168">
   </div>
 </section>
 
