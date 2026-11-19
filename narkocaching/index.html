@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Narkocaching – preventivní kampaň</title>
+<meta name="description" content="Preventivní protidrogová kampaň. Tohle není e-shop.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0b0c; --panel:#141416; --line:#2a2a2e; --text:#f2f2f2; --muted:#a3a3aa;
+  --red:#e4232d; --red-glow:rgba(228,35,45,.55); --green:#2fd27a; --paper:#efefea;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:16px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(60rem 40rem at 85% 5%,rgba(255,255,255,.06),transparent 60%),
+    radial-gradient(30rem 30rem at 0% 70%,rgba(228,35,45,.08),transparent 70%);}
+button{font:inherit;cursor:pointer}
+.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 16px}
+.display{font-family:Anton,Impact,"Arial Narrow",sans-serif;font-weight:400;letter-spacing:.01em;text-transform:uppercase}
+
+/* header */
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.logo{width:54px;height:54px;flex:none}
+.brand-name{font-size:clamp(1.6rem,6.5vw,2.8rem);line-height:1}
+.brand-name span{color:var(--red)}
+.brand-sub{font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:#ddd;margin-top:4px}
+.brand-sub b{color:var(--red);font-weight:600}
+.burger{background:none;border:0;padding:8px;display:grid;gap:6px}
+.burger i{display:block;width:34px;height:4px;background:#fff;border-radius:2px}
+
+/* hero */
+.hero{position:relative;display:grid;grid-template-columns:1.1fr 1fr;align-items:center;min-height:420px}
+.hero h1{font-size:clamp(2.6rem,11vw,4.6rem);line-height:.98;margin:10px 0 0;transform:rotate(-2deg);
+  text-shadow:0 2px 0 #000}
+.underline{display:block;height:6px;width:70%;background:var(--red);margin:14px 0 18px;transform:rotate(-2deg);
+  border-radius:3px 40px 3px 40px}
+.hero p{font-size:1.15rem;color:#e7e7e7;max-width:22rem;margin:0 0 24px}
+.cta{display:inline-flex;align-items:center;gap:12px;background:var(--red);color:#fff;border:0;border-radius:10px;
+  padding:16px 26px;font-size:1.35rem;box-shadow:0 0 28px var(--red-glow)}
+.cta:hover{filter:brightness(1.1)}
+.figure{position:relative;height:100%;min-height:380px}
+.figure svg{position:absolute;right:-30px;top:-20px;width:120%;height:auto;max-width:520px}
+
+/* features */
+.features{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:14px;
+  background:rgba(20,20,22,.85);margin:26px 0}
+.feat{display:flex;gap:12px;align-items:center;padding:18px 16px}
+.feat+.feat{border-left:1px solid var(--line)}
+.feat svg{width:40px;height:40px;flex:none}
+.feat h3{margin:0;font-size:1.05rem}
+.feat p{margin:2px 0 0;color:var(--muted);font-size:.9rem;line-height:1.3}
+
+/* map + stats */
+.live{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;align-items:center}
+.map{width:100%;height:auto;display:block}
+.pin{cursor:pointer}
+.pin:hover circle{filter:brightness(1.3)}
+.stats{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:18px}
+.stats h4{margin:0 0 12px;color:var(--green);font-size:1.15rem;display:flex;align-items:center;gap:10px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);
+  animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.stat{display:flex;gap:14px;align-items:center;padding:8px 0;font-size:.98rem}
+.stat svg{width:28px;height:28px;flex:none}
+.stats .bar{height:3px;background:var(--red);width:70%;margin-top:10px;border-radius:2px}
+
+/* products */
+.offer h2{font-size:clamp(2rem,8vw,3rem);margin:34px 0 14px}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.card{grid-column:span 2;position:relative;border:1px solid var(--line);border-radius:14px;
+  background:linear-gradient(180deg,#18181b,#101012);padding:16px;display:grid;
+  grid-template-columns:auto 1fr;grid-template-rows:auto auto;gap:6px 12px;text-align:left;color:inherit}
+.card:nth-child(4){grid-column:2 / span 2}
+.card .img{width:80px;height:64px;grid-row:1}
+.card h3{margin:4px 0 0;font-size:1.5rem;line-height:1}
+.card small{display:block;color:#ccc;font-family:Inter,sans-serif;text-transform:none;font-size:.85rem}
+.card .qty{grid-column:1;color:#ddd}
+.card .row{grid-column:1 / -1;display:flex;justify-content:space-between;align-items:center}
+.price{color:var(--red);font-size:1.6rem}
+.cart{border:2px solid var(--red);background:transparent;border-radius:8px;width:62px;height:40px;
+  display:grid;place-items:center}
+.cart svg{width:22px;height:22px}
+.card:hover{border-color:#3d3d44}
+
+/* banner */
+.banner{display:block;width:100%;margin:36px 0 20px;border:0;background:none;padding:0;color:#111;text-align:left}
+.banner .paper{display:block;position:relative;background:var(--paper);padding:26px 70px 22px 40px;transform:rotate(-2deg);
+  clip-path:polygon(2% 8%,40% 0,72% 6%,100% 0,98% 60%,100% 100%,60% 94%,30% 100%,0 92%,3% 50%)}
+.banner .tag{position:absolute;left:24px;top:-6px;background:var(--red);color:#fff;font-family:"Permanent Marker",cursive;
+  padding:2px 12px;transform:rotate(-6deg);font-size:1.3rem}
+.banner .txt{display:block;font-family:Anton,sans-serif;font-size:clamp(1.4rem,5.5vw,2.2rem);display:block;margin-top:10px}
+.banner .arrow{position:absolute;right:26px;top:50%;transform:translateY(-50%);font-size:2rem}
+
+footer{color:#7b7b82;font-size:.8rem;padding:30px 0 40px;text-align:center}
+footer button{background:none;border:0;color:#9a9aa2;text-decoration:underline;padding:0}
+
+/* ===== REVEAL ===== */
+.reveal{position:fixed;inset:0;z-index:50;background:#f4f1ea;color:#121212;overflow-y:auto;
+  opacity:0;visibility:hidden;transition:opacity .35s ease}
+.reveal.on{opacity:1;visibility:visible}
+body.locked{overflow:hidden}
+.glitch{position:fixed;inset:0;z-index:49;background:var(--red);pointer-events:none;opacity:0}
+.glitch.flash{animation:flash .45s steps(3)}
+@keyframes flash{0%{opacity:.9}50%{opacity:.2}100%{opacity:0}}
+.rv{max-width:720px;margin:0 auto;padding:40px 18px 60px}
+.rv .stamp{display:inline-block;font-family:Anton,sans-serif;font-size:.95rem;letter-spacing:.2em;color:var(--red);
+  border:2px solid var(--red);padding:4px 10px;transform:rotate(-3deg)}
+.rv h2{font-family:Anton,sans-serif;text-transform:uppercase;font-size:clamp(2.4rem,10vw,4.2rem);line-height:1;margin:18px 0 10px}
+.rv h2 s{color:#8a8a8a;text-decoration-color:var(--red);text-decoration-thickness:6px}
+.rv .lead{font-size:1.2rem;margin:0 0 26px}
+.box{background:#fff;border-radius:14px;padding:20px 20px;margin:0 0 16px;border:1px solid #e1ddd3}
+.box h3{margin:0 0 6px;font-size:1.15rem}
+.box p{margin:0;color:#333}
+.box.hit{border:2px solid var(--red)}
+.box.hit .kicker{color:var(--red);font-weight:800;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase}
+.facts{display:grid;gap:12px;grid-template-columns:1fr 1fr;margin-bottom:16px}
+.facts .box{margin:0}
+.big{font-family:Anton,sans-serif;font-size:2rem;line-height:1;color:var(--red);display:block;margin-bottom:6px}
+.help{background:#121212;color:#fff;border-radius:14px;padding:22px 20px;margin:24px 0 16px}
+.help h3{margin:0 0 12px;font-family:Anton,sans-serif;text-transform:uppercase;font-size:1.6rem}
+.help ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.help a{color:#fff;font-weight:600}
+.help li span{color:#aaa;font-size:.9rem;display:block}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.btn{border:0;border-radius:10px;padding:14px 20px;font-weight:800}
+.btn.red{background:var(--red);color:#fff}
+.btn.ghost{background:transparent;border:2px solid #121212;color:#121212}
+.small{font-size:.8rem;color:#666;margin-top:24px}
+
+@media (max-width:720px){
+  .hero{grid-template-columns:1fr}
+  .figure{position:absolute;inset:0 -16px auto auto;width:62%;min-height:0;height:420px;z-index:-1;opacity:.9}
+  .figure svg{right:-20px;top:20px;width:150%}
+  .hero p{max-width:15rem;font-size:1.05rem}
+  .features{grid-template-columns:repeat(3,1fr)}
+  .feat{flex-direction:column;align-items:flex-start;padding:14px 10px;gap:6px}
+  .feat svg{width:30px;height:30px}
+  .feat h3{font-size:.9rem}
+  .feat p{font-size:.78rem}
+  .live{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr 1fr;gap:10px}
+  .card,.card:nth-child(4){grid-column:span 1;padding:12px;grid-template-columns:1fr}
+  .card .img{width:64px;height:50px}
+  .card h3{font-size:1.25rem}
+  .price{font-size:1.3rem}
+  .cart{width:48px;height:36px}
+  .card:nth-child(5){grid-column:1 / -1}
+  .facts{grid-template-columns:1fr}
+  .brand-sub{letter-spacing:.12em;font-size:.6rem}
+  .banner .paper{padding:22px 54px 18px 24px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <a class="brand" href="#" data-hook="logo">
+    <svg class="logo" viewBox="0 0 60 60" aria-hidden="true">
+      <circle cx="30" cy="28" r="25" fill="none" stroke="#fff" stroke-width="4"/>
+      <path d="M17 18l8 8M25 18l-8 8M35 18l8 8M43 18l-8 8" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M16 36q14 12 28 0" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M22 52v6M30 53v7M38 52v5" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="brand-name display">Narkocaching<span>.cz</span></div>
+      <div class="brand-sub">Drogy. Bez kontaktu. <b>Po celé Praze.</b></div>
+    </div>
+  </a>
+  <button class="burger" aria-label="Menu" data-hook="menu"><i></i><i></i><i></i></button>
+</header>
+
+<section class="hero">
+  <div>
+    <h1 class="display">Objednej.<br>Najdi.<br>Vyzvedni.</h1>
+    <span class="underline"></span>
+    <p>První služba v Česku, která ti doručí drogy bez dealera. Přes GPS. Diskrétně. Rychle. Anonymně.</p>
+    <button class="cta display" data-hook="cta">Zobrazit nabídku <span aria-hidden="true">→</span></button>
+  </div>
+  <div class="figure" aria-hidden="true">
+    <svg viewBox="0 0 400 440">
+      <defs>
+        <radialGradient id="hood" cx="50%" cy="30%" r="70%">
+          <stop offset="0" stop-color="#3a3a3f"/><stop offset=".55" stop-color="#1a1a1d"/><stop offset="1" stop-color="#0b0b0c"/>
+        </radialGradient>
+        <radialGradient id="face" cx="50%" cy="45%" r="50%">
+          <stop offset="0" stop-color="#000"/><stop offset="1" stop-color="#050505"/>
+        </radialGradient>
+        <linearGradient id="bag" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffffff" stop-opacity=".35"/><stop offset="1" stop-color="#d9d9d9" stop-opacity=".2"/>
+        </linearGradient>
+      </defs>
+      <path d="M200 20c-80 0-130 70-130 150 0 40 10 70 25 95L40 440h320l-55-175c15-25 25-55 25-95 0-80-50-150-130-150z" fill="url(#hood)"/>
+      <ellipse cx="205" cy="165" rx="70" ry="85" fill="url(#face)" opacity=".85"/>
+      <path d="M90 300q-10 60 0 140h70q10-60 20-110z" fill="#141416"/>
+      <!-- hand + bag -->
+      <path d="M95 255q30-25 70-10l15 30q-20 15-55 15-25 0-30-35z" fill="#2b2420"/>
+      <rect x="120" y="270" width="110" height="120" rx="6" fill="url(#bag)" stroke="#fff" stroke-opacity=".5" transform="rotate(8 175 330)"/>
+      <rect x="120" y="270" width="110" height="10" fill="#fff" fill-opacity=".45" transform="rotate(8 175 330)"/>
+      <path d="M128 340q45-30 95 5v40h-95z" fill="#f4f4f4" fill-opacity=".9" transform="rotate(8 175 330)"/>
+    </svg>
+  </div>
+</section>
+
+<section class="features">
+  <div class="feat">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 14q16-6 32 0v6q-2 10-12 8l-4-5-4 5Q6 30 4 20z" fill="#fff"/><ellipse cx="13" cy="19" rx="4" ry="2.5" fill="#000"/><ellipse cx="27" cy="19" rx="4" ry="2.5" fill="#000"/></svg>
+    <div><h3 class="display">Anonymně</h3><p>Žádné osobní údaje.</p></div>
+  </div>
+  <div class="feat">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><text x="20" y="31" text-anchor="middle" font-family="Anton,sans-serif" font-size="32" fill="#fff">₿</text></svg>
+    <div><h3 class="display">Platba v BTC</h3><p>Rychlá a bezpečná.</p></div>
+  </div>
+  <div class="feat">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M23 2L8 23h10l-3 15 17-23H22z" fill="#fff"/></svg>
+    <div><h3 class="display">Rychle</h3><p>Vyzvednutí do 30 min.</p></div>
+  </div>
+</section>
+
+<section class="live">
+  <svg class="map" viewBox="0 0 520 300" role="img" aria-label="Mapa Prahy s úkryty">
+    <defs>
+      <pattern id="streets" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
+        <path d="M0 20h40M20 0v40" stroke="#26262b" stroke-width="1.2"/>
+      </pattern>
+      <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="520" height="300" fill="url(#streets)"/>
+    <g stroke="#3a3a40" stroke-width="1.6" fill="none">
+      <path d="M0 80q140 30 260-10t260 20"/><path d="M0 210q120-40 240 0t280-20"/>
+      <path d="M120 0q30 150-10 300"/><path d="M390 0q-40 140 20 300"/>
+      <path d="M60 300L470 0"/><path d="M30 0l460 300"/>
+    </g>
+    <path d="M300 0c-60 40 40 90-30 140s-110 60-60 160" fill="none" stroke="#2c4a55" stroke-width="16" stroke-linecap="round"/>
+    <text x="180" y="140" font-family="Anton,sans-serif" font-size="30" fill="#9a9aa2" letter-spacing="2">PRAHA</text>
+    <g class="pins" filter="url(#glow)">
+      <g class="pin" data-hook="pin" transform="translate(110 70)"><path d="M0 0c-18 0-26 14-22 26L0 52l22-26C26 14 18 0 0 0z" fill="#c4151e"/><circle cx="0" cy="20" r="14" fill="#e4232d"/><path d="M-6 16l6-4 6 4v8l-6 4-6-4z" fill="none" stroke="#fff" stroke-width="2"/></g>
+      <g class="pin" data-hook="pin" transform="translate(330 30)"><path d="M0 0c-18 0-26 14-22 26L0 52l22-26C26 14 18 0 0 0z" fill="#c4151e"/><circle cx="0" cy="20" r="14" fill="#e4232d"/><path d="M-6 16l6-4 6 4v8l-6 4-6-4z" fill="none" stroke="#fff" stroke-width="2"/></g>
+      <g class="pin" data-hook="pin" transform="translate(100 190)"><path d="M0 0c-18 0-26 14-22 26L0 52l22-26C26 14 18 0 0 0z" fill="#c4151e"/><circle cx="0" cy="20" r="14" fill="#e4232d"/><path d="M-6 16l6-4 6 4v8l-6 4-6-4z" fill="none" stroke="#fff" stroke-width="2"/></g>
+      <g class="pin" data-hook="pin" transform="translate(370 170)"><path d="M0 0c-18 0-26 14-22 26L0 52l22-26C26 14 18 0 0 0z" fill="#c4151e"/><circle cx="0" cy="20" r="14" fill="#e4232d"/><path d="M-6 16l6-4 6 4v8l-6 4-6-4z" fill="none" stroke="#fff" stroke-width="2"/></g>
+      <g class="pin" data-hook="pin" transform="translate(260 225)"><path d="M0 0c-18 0-26 14-22 26L0 52l22-26C26 14 18 0 0 0z" fill="#c4151e"/><circle cx="0" cy="20" r="14" fill="#e4232d"/><path d="M-6 16l6-4 6 4v8l-6 4-6-4z" fill="none" stroke="#fff" stroke-width="2"/></g>
+    </g>
+  </svg>
+  <div class="stats">
+    <h4 class="display"><span class="dot"></span>Online výdej</h4>
+    <div class="stat"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M4 9l10-5 10 5v10l-10 5-10-5zM4 9l10 5 10-5M14 14v10" fill="none" stroke="#fff" stroke-width="2"/></svg><span><b id="hides">37</b> aktivních úkrytů</span></div>
+    <div class="stat"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="9" cy="10" r="4" fill="#fff"/><circle cx="19" cy="10" r="4" fill="#fff"/><path d="M2 24q7-10 14 0M12 24q7-10 14 0" fill="#fff"/></svg><span><b id="users">1 842</b> uživatelů online</span></div>
+    <div class="stat"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M16 2L5 16h7l-2 10 12-16h-7z" fill="#fff"/></svg><span>Průměrné doručení: do 30 min</span></div>
+    <div class="bar"></div>
+  </div>
+</section>
+
+<section class="offer">
+  <h2 class="display">Aktuální nabídka</h2>
+  <div class="grid">
+    <button class="card" data-hook="product" data-p="koks">
+      <svg class="img" viewBox="0 0 80 64" aria-hidden="true"><path d="M8 54q32-60 64 0z" fill="#f5f5f5"/><ellipse cx="40" cy="55" rx="34" ry="5" fill="#fff" opacity=".6"/></svg>
+      <div><h3 class="display">Mouka</h3><small>(„koks“)</small></div>
+      <span class="qty">1 g</span>
+      <div class="row"><span class="price display">4 000 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
+    </button>
+    <button class="card" data-hook="product" data-p="trava">
+      <svg class="img" viewBox="0 0 80 64" aria-hidden="true"><g fill="#6b8f3a"><ellipse cx="30" cy="38" rx="18" ry="12"/><ellipse cx="50" cy="36" rx="16" ry="11" fill="#7fa548"/><ellipse cx="42" cy="46" rx="20" ry="9" fill="#55732c"/></g></svg>
+      <div><h3 class="display">Zelí</h3><small>(„tráva“)</small></div>
+      <span class="qty">1 g</span>
+      <div class="row"><span class="price display">600 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
+    </button>
+    <button class="card" data-hook="product" data-p="pernik">
+      <svg class="img" viewBox="0 0 80 64" aria-hidden="true"><g fill="#dfe3e8" stroke="#fff" stroke-width="1"><path d="M10 40l12-14 10 8-6 14z"/><path d="M30 30l14-12 8 16-12 10z"/><path d="M48 44l12-16 10 12-8 12z"/><path d="M24 50l10-6 8 8-12 4z"/></g></svg>
+      <div><h3 class="display">Peří</h3><small>(„perník“)</small></div>
+      <span class="qty">1 g</span>
+      <div class="row"><span class="price display">1 500 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
+    </button>
+    <button class="card" data-hook="product" data-p="extaze">
+      <svg class="img" viewBox="0 0 80 64" aria-hidden="true"><g fill="#e9e9ee" stroke="#bbb"><ellipse cx="24" cy="40" rx="15" ry="11"/><ellipse cx="50" cy="28" rx="15" ry="11"/><ellipse cx="56" cy="48" rx="15" ry="11"/></g><g fill="none" stroke="#999" stroke-width="1.5"><path d="M18 42q6 5 12 0M44 30q6 5 12 0M50 50q6 5 12 0"/></g></svg>
+      <div><h3 class="display">Cukr</h3><small>(„extáze“)</small></div>
+      <span class="qty">1 ks</span>
+      <div class="row"><span class="price display">400 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
+    </button>
+    <button class="card" data-hook="product" data-p="lsd">
+      <svg class="img" viewBox="0 0 80 64" aria-hidden="true"><rect x="18" y="8" width="44" height="44" fill="#ece7d8" transform="rotate(-10 40 30)"/><circle cx="40" cy="30" r="11" fill="none" stroke="#444" stroke-width="2"/><path d="M35 28h.1M45 28h.1" stroke="#444" stroke-width="3" stroke-linecap="round"/><path d="M35 34q5 4 10 0" fill="none" stroke="#444" stroke-width="2"/></svg>
+      <div><h3 class="display">Papír</h3><small>(„LSD“)</small></div>
+      <span class="qty">1 ks</span>
+      <div class="row"><span class="price display">350 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
+    </button>
+  </div>
+</section>
+
+<button class="banner" data-hook="banner">
+  <span class="paper">
+    <span class="tag">Novinka</span>
+    <span class="txt">Nyní i v Brně a Ostravě!</span>
+    <span class="arrow" aria-hidden="true">→</span>
+  </span>
+</button>
+
+<footer>
+  Preventivní protidrogová kampaň. Nic se tu neprodává.
+  <button data-hook="footer">Co to je?</button>
+</footer>
+
+</div>
+
+<div class="glitch" id="glitch"></div>
+
+<!-- REVEAL -->
+<section class="reveal" id="reveal" role="dialog" aria-modal="true" aria-labelledby="rv-title">
+  <div class="rv">
+    <span class="stamp">Preventivní kampaň</span>
+    <h2 id="rv-title">Objednej. Najdi. <s>Vyzvedni.</s><br>Prohraj.</h2>
+    <p class="lead">Tohle není e-shop. Nic se tu neprodává. Ale přesně takhle vypadají weby, přes které se drogy v Česku opravdu shánějí. A přesně tolik o nich víš: nic.</p>
+
+    <div class="box hit" id="hit" hidden>
+      <div class="kicker" id="hit-kicker">Kliknul jsi na</div>
+      <h3 id="hit-title"></h3>
+      <p id="hit-text"></p>
+    </div>
+
+    <div class="facts">
+      <div class="box">
+        <span class="big">„Anonymně“</span>
+        <p>Platba v bitcoinech není anonymní. Každá transakce je navždy zapsaná ve veřejném blockchainu a dá se dohledat.</p>
+      </div>
+      <div class="box">
+        <span class="big">„Bez dealera“</span>
+        <p>Dealer tam je pořád. Jen ho nevidíš. Nevíš, kdo balíček připravil, z čeho, ani kdo ten úkryt sleduje.</p>
+      </div>
+      <div class="box">
+        <span class="big">„37 úkrytů“</span>
+        <p>Čísla na tomhle webu jsou vymyšlená. Stejně jako na těch skutečných. Ani tam ti nikdo nic nezaručí.</p>
+      </div>
+      <div class="box">
+        <span class="big">„Do 30 min“</span>
+        <p>Zaplatíš předem a úkryt může být prázdný. Reklamace neexistuje. Policii to nenahlásíš.</p>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3>Nejnebezpečnější část „nabídky“ je to, co v ní není napsané</h3>
+      <p>Na ulici ani v úkrytu nikdo nekontroluje složení ani dávku. Neznámé příměsi a nečekaně silné dávky patří k nejčastějším důvodům otrav a předávkování.</p>
+    </div>
+
+    <div class="help">
+      <h3>Když potřebuješ pomoc</h3>
+      <ul>
+        <li><a href="tel:155">155</a><span>Záchranná služba, když jde o život</span></li>
+        <li><a href="tel:116111">116 111</a><span>Linka bezpečí, pro děti a mladé do 26 let, zdarma a nonstop</span></li>
+        <li><a href="tel:116123">116 123</a><span>Linka první psychické pomoci</span></li>
+        <li><a href="https://www.drogy-info.cz" target="_blank" rel="noopener">drogy-info.cz</a><span>Ověřené informace o drogách a mapa kontaktních center</span></li>
+      </ul>
+    </div>
+
+    <div class="actions">
+      <button class="btn red" id="share">Pošli to dál</button>
+      <button class="btn ghost" id="back">Zpět na „web“</button>
+    </div>
+    <p class="small" id="share-msg" hidden>Odkaz zkopírován.</p>
+    <p class="small">Tento web je součástí preventivní kampaně. Neobsahuje žádnou nabídku, neshromažďuje osobní údaje a nepřijímá platby.</p>
+  </div>
+</section>
+
+<noscript><style>.reveal{opacity:1;visibility:visible;position:static}</style></noscript>
+
+<script>
+(function(){
+  var DATA = {
+    koks:{t:'Mouka („koks“), 1 g za 4 000 Kč',
+      x:'Kokain z ulice bývá ředěný. Často se v něm najde levamisol, veterinární lék proti parazitům, který může zničit bílé krvinky. Kokain zvyšuje riziko infarktu a mrtvice i u mladých lidí bez potíží se srdcem.'},
+    trava:{t:'Zelí („tráva“), 1 g za 600 Kč',
+      x:'V Evropě se opakovaně zachytila tráva postříkaná syntetickými kanabinoidy. Nepoznáš je podle vzhledu ani podle vůně a mohou způsobit křeče, psychózu nebo kolaps.'},
+    pernik:{t:'Peří („perník“), 1 g za 1 500 Kč',
+      x:'Pervitin z neznámé varny. Nikdo neví, co v něm zůstalo z výroby. Závislost se rozvíjí rychle a poškozuje srdce, zuby i psychiku.'},
+    extaze:{t:'Cukr („extáze“), 1 ks za 400 Kč',
+      x:'Množství MDMA se liší tabletu od tablety a některé jsou extrémně silné. Jiné obsahují úplně jiné látky, například PMMA, které působí později a svádí k další dávce. Přehřátí organismu může zabít.'},
+    lsd:{t:'Papír („LSD“), 1 ks za 350 Kč',
+      x:'Papírky prodávané jako LSD mohou obsahovat látky ze skupiny NBOMe, které jsou nebezpečné už v nepatrném množství a mají na svědomí i úmrtí.'}
+  };
+  var KICK = {
+    cta:'Chtěl jsi vidět nabídku', menu:'Hledal jsi menu', pin:'Kliknul jsi na úkryt', banner:'Zajímalo tě Brno a Ostrava',
+    logo:'Kliknul jsi na logo', footer:'Chtěl jsi vědět, co to je', timer:'Byl jsi tu dost dlouho'
+  };
+  var reveal = document.getElementById('reveal'), glitch = document.getElementById('glitch');
+  var hit = document.getElementById('hit'), shown = false;
+
+  function open(kind, product){
+    var t, x;
+    if (product && DATA[product]) {
+      document.getElementById('hit-kicker').textContent = 'Dal jsi do košíku';
+      t = DATA[product].t; x = DATA[product].x;
+    } else {
+      document.getElementById('hit-kicker').textContent = KICK[kind] || 'Kliknul jsi';
+      t = 'A to stačilo.';
+      x = kind === 'pin'
+        ? 'Úkryt na mapě je místo, kde nevíš, kdo tě pozoruje. Může to být podvodník, který si počká na peníze, nebo policie.'
+        : 'Jedno kliknutí. Přesně tak snadno se to na skutečných webech začíná. Jenže tam pak nikdo nenapíše, co je pravda.';
+    }
+    document.getElementById('hit-title').textContent = t;
+    document.getElementById('hit-text').textContent = x;
+    hit.hidden = false;
+    glitch.classList.remove('flash'); void glitch.offsetWidth; glitch.classList.add('flash');
+    setTimeout(function(){
+      reveal.classList.add('on'); document.body.classList.add('locked'); reveal.scrollTop = 0; shown = true;
+      document.getElementById('back').focus({preventScroll:true}); reveal.scrollTop = 0;
+    }, 180);
+  }
+  function close(){ reveal.classList.remove('on'); document.body.classList.remove('locked'); }
+
+  document.addEventListener('click', function(e){
+    var el = e.target.closest('[data-hook]');
+    if (!el) return;
+    e.preventDefault();
+    open(el.getAttribute('data-hook'), el.getAttribute('data-p'));
+  });
+  document.getElementById('back').addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
+
+  // Auto-reveal if the visitor just lingers and scrolls without clicking.
+  setTimeout(function(){ if (!shown) open('timer'); }, 25000);
+
+  // Live-looking (fake) counters.
+  var users = 1842;
+  setInterval(function(){
+    users += Math.round((Math.random() - .45) * 12);
+    document.getElementById('users').textContent = users.toLocaleString('cs-CZ');
+  }, 2500);
+
+  document.getElementById('share').addEventListener('click', function(){
+    var url = location.href.split('#')[0];
+    if (navigator.share) { navigator.share({title:'Narkocaching', text:'Klikni na „Zobrazit nabídku“.', url:url}).catch(function(){}); return; }
+    try { navigator.clipboard.writeText(url).then(function(){ document.getElementById('share-msg').hidden = false; }); } catch(_) {}
+  });
+})();
+</script>
+</body>
+</html>
