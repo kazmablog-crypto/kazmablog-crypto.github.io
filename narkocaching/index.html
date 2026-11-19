@@ -273,10 +273,10 @@ body.locked{overflow:hidden}
 .chips{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;scrollbar-width:none}
 .chips button{flex:none;background:#141416;border:1px solid var(--line);color:#ddd;border-radius:20px;padding:6px 12px;font-size:.85rem}
 .chips button.sel{background:var(--red);border-color:var(--red);color:#fff}
-.ma-map{flex:1;min-height:0;position:relative}
+.ma-map{flex:1;min-height:0;position:relative;touch-action:none;overflow:hidden;cursor:grab}
 .ma-map svg{position:absolute;inset:0;width:100%;height:100%}
 .ma-lbl{font-family:Anton,sans-serif;font-size:11px;fill:#5d5d66;letter-spacing:1px;text-anchor:middle}
-.ma-you{font:700 9px Inter,sans-serif;fill:#8fb8ff}
+.ma-you{font:700 15px Inter,sans-serif;fill:#8fb8ff}
 .ma-me{transition:transform .6s ease}
 .cache{cursor:pointer;transition:opacity .2s}
 .cache .ring{fill:none;stroke:var(--red);stroke-width:2;opacity:.6;transform-origin:center;animation:ring 2s infinite}
@@ -302,6 +302,12 @@ body.locked{overflow:hidden}
 .coords{font-family:ui-monospace,Menlo,monospace;background:#0d0d0f;border-radius:10px;padding:14px;margin:14px 0;text-align:left;line-height:1.8}
 .redact{background:#e8e8e8;color:transparent;border-radius:2px;animation:blink 1s steps(2) infinite}
 @keyframes blink{50%{opacity:.4}}
+.ma-zoom{position:absolute;right:12px;top:12px;display:grid;gap:6px}
+.ma-zoom button:focus{outline:none}
+.ma-zoom button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:rgba(20,20,22,.9);color:#fff;font-size:1.3rem}
+.ma-attr{position:absolute;right:6px;bottom:4px;font-size:10px;color:#888}
+.note{font-size:.8rem;color:var(--muted);margin:-4px 0 12px}
+.hpin{cursor:pointer}
 </style>
 </head>
 <body>
@@ -351,28 +357,14 @@ body.locked{overflow:hidden}
 </section>
 
 <section class="live" id="mapa">
-  <svg class="map" data-hook="map" viewBox="0 0 520 300" role="img" aria-label="Mapa Prahy s úkryty">
-    <defs>
-      <pattern id="streets" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
-        <path d="M0 20h40M20 0v40" stroke="#26262b" stroke-width="1.2"/>
-      </pattern>
-      <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <rect width="520" height="300" fill="url(#streets)"/>
-    <g stroke="#3a3a40" stroke-width="1.6" fill="none">
-      <path d="M0 80q140 30 260-10t260 20"/><path d="M0 210q120-40 240 0t280-20"/>
-      <path d="M120 0q30 150-10 300"/><path d="M390 0q-40 140 20 300"/>
-      <path d="M60 300L470 0"/><path d="M30 0l460 300"/>
-    </g>
-    <path d="M300 0c-60 40 40 90-30 140s-110 60-60 160" fill="none" stroke="#2c4a55" stroke-width="16" stroke-linecap="round"/>
-    <text x="180" y="140" font-family="Anton,sans-serif" font-size="30" fill="#9a9aa2" letter-spacing="2">PRAHA</text>
-    <g class="pins" filter="url(#glow)">
-      <g class="pin" data-hook="pin" transform="translate(110 70) scale(1.35)"><path d="M0 0c-18 0-26 14-22 26L0 52l22-26C26 14 18 0 0 0z" fill="#c4151e"/><circle cx="0" cy="20" r="14" fill="#e4232d"/><path d="M-6 16l6-4 6 4v8l-6 4-6-4z" fill="none" stroke="#fff" stroke-width="2"/></g>
-      <g class="pin" data-hook="pin" transform="translate(330 30) scale(1.35)"><path d="M0 0c-18 0-26 14-22 26L0 52l22-26C26 14 18 0 0 0z" fill="#c4151e"/><circle cx="0" cy="20" r="14" fill="#e4232d"/><path d="M-6 16l6-4 6 4v8l-6 4-6-4z" fill="none" stroke="#fff" stroke-width="2"/></g>
-      <g class="pin" data-hook="pin" transform="translate(100 190) scale(1.35)"><path d="M0 0c-18 0-26 14-22 26L0 52l22-26C26 14 18 0 0 0z" fill="#c4151e"/><circle cx="0" cy="20" r="14" fill="#e4232d"/><path d="M-6 16l6-4 6 4v8l-6 4-6-4z" fill="none" stroke="#fff" stroke-width="2"/></g>
-      <g class="pin" data-hook="pin" transform="translate(370 170) scale(1.35)"><path d="M0 0c-18 0-26 14-22 26L0 52l22-26C26 14 18 0 0 0z" fill="#c4151e"/><circle cx="0" cy="20" r="14" fill="#e4232d"/><path d="M-6 16l6-4 6 4v8l-6 4-6-4z" fill="none" stroke="#fff" stroke-width="2"/></g>
-      <g class="pin" data-hook="pin" transform="translate(260 225) scale(1.35)"><path d="M0 0c-18 0-26 14-22 26L0 52l22-26C26 14 18 0 0 0z" fill="#c4151e"/><circle cx="0" cy="20" r="14" fill="#e4232d"/><path d="M-6 16l6-4 6 4v8l-6 4-6-4z" fill="none" stroke="#fff" stroke-width="2"/></g>
-    </g>
+  <svg class="map" data-hook="map" viewBox="80 210 1030 594" role="img" aria-label="Mapa Prahy s keškami">
+    <image href="praha.jpg" width="1188" height="1053"/>
+    <rect x="80" y="210" width="1030" height="594" fill="url(#vign)"/>
+    <defs><radialGradient id="vign" cx="50%" cy="50%" r="70%"><stop offset=".55" stop-color="#0b0b0c" stop-opacity="0"/><stop offset="1" stop-color="#0b0b0c" stop-opacity=".95"/></radialGradient>
+      <filter id="glow"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    <text x="560" y="520" font-family="Anton,sans-serif" font-size="66" fill="#b9b9c0" letter-spacing="4" text-anchor="middle" opacity=".85">PRAHA</text>
+    <g id="home-pins" filter="url(#glow)"></g>
+    <text x="1104" y="798" font-family="Inter,sans-serif" font-size="15" fill="#777" text-anchor="end">© OpenStreetMap</text>
   </svg>
   <div class="stats">
     <h4 class="display"><span class="dot"></span>Online výdej</h4>
@@ -457,25 +449,14 @@ body.locked{overflow:hidden}
   <div class="ma-where"><span>📍 Kde jsi?</span><select id="ma-zone"><option value="0">Praha 1 – Staré Město</option><option value="1">Praha 2 – Vinohrady</option><option value="2" selected>Praha 3 – Žižkov</option><option value="3">Praha 5 – Smíchov</option><option value="4">Praha 6 – Dejvice</option><option value="5">Praha 7 – Holešovice</option><option value="6">Praha 8 – Karlín</option><option value="7">Praha 10 – Vršovice</option></select></div>
   <div class="chips" id="ma-chips"></div>
   <div class="ma-map">
-    <svg id="ma-svg" viewBox="0 0 400 460" role="img" aria-label="Mapa kešek v Praze">
-      <defs>
-        <pattern id="mstreets" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(14)">
-          <path d="M0 13h26M13 0v26" stroke="#23232a" stroke-width="1"/>
-        </pattern>
-        <clipPath id="cc"><circle r="13"/></clipPath>
-      </defs>
-      <rect width="400" height="460" fill="#0e0e11"/>
-      <rect width="400" height="460" fill="url(#mstreets)"/>
-      <g stroke="#34343c" stroke-width="2.4" fill="none" stroke-linecap="round">
-        <path d="M0 200q120-20 200 30t200-10"/><path d="M0 330q140-40 250 0t150-20"/>
-        <path d="M90 0q20 230-10 460"/><path d="M300 0q-30 240 30 460"/>
-        <path d="M20 460L380 20"/><path d="M10 40l380 400"/><path d="M0 90q200 30 400-40"/>
-      </g>
-      <path d="M250 0c-40 50 20 110-40 160s-80 70-60 140 -40 110 -10 160" fill="none" stroke="#1f3e49" stroke-width="20" stroke-linecap="round"/>
-      <g opacity=".9"><text x="200" y="265" class="ma-lbl">PRAHA 1</text><text x="245" y="330" class="ma-lbl">PRAHA 2</text><text x="310" y="265" class="ma-lbl">PRAHA 3</text><text x="120" y="340" class="ma-lbl">PRAHA 5</text><text x="105" y="165" class="ma-lbl">PRAHA 6</text><text x="205" y="150" class="ma-lbl">PRAHA 7</text><text x="300" y="170" class="ma-lbl">PRAHA 8</text><text x="320" y="370" class="ma-lbl">PRAHA 10</text></g>
+    <svg id="ma-svg" viewBox="0 0 1188 1053" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Mapa kešek v Praze">
+      <defs><clipPath id="cc"><circle r="21"/></clipPath></defs>
+      <image href="praha.jpg" width="1188" height="1053"/>
       <g id="ma-caches"></g>
-      <g id="ma-me" class="ma-me"><circle r="26" fill="#2d7cf6" opacity=".18"/><circle r="8" fill="#2d7cf6" stroke="#fff" stroke-width="3"/><text y="-14" text-anchor="middle" class="ma-you">TY</text></g>
+      <g id="ma-me" class="ma-me"><circle r="44" fill="#2d7cf6" opacity=".18"/><circle r="13" fill="#2d7cf6" stroke="#fff" stroke-width="5"/><text y="-22" text-anchor="middle" class="ma-you">TY</text></g>
     </svg>
+    <div class="ma-zoom"><button id="zin" aria-label="Přiblížit">+</button><button id="zout" aria-label="Oddálit">−</button></div>
+    <div class="ma-attr">© OpenStreetMap</div>
   </div>
   <div class="ma-list"><h4>Nejblíž tobě</h4><div id="ma-near"></div></div>
 </section>
@@ -568,20 +549,18 @@ body.locked{overflow:hidden}
       x:'Papírky prodávané jako LSD mohou obsahovat látky ze skupiny NBOMe, které jsou nebezpečné už v nepatrném množství a mají na svědomí i úmrtí.'}
   };
   var KEYS = Object.keys(P);
-  var ZONES = [{n:'Praha 1',d:'Staré Město',x:200,y:235},{n:'Praha 2',d:'Vinohrady',x:245,y:300},{n:'Praha 3',d:'Žižkov',x:310,y:235},{n:'Praha 5',d:'Smíchov',x:120,y:310},{n:'Praha 6',d:'Dejvice',x:105,y:135},{n:'Praha 7',d:'Holešovice',x:205,y:120},{n:'Praha 8',d:'Karlín',x:300,y:140},{n:'Praha 10',d:'Vršovice',x:320,y:340}];
+  var ZONES = [{n:'Praha 1',d:'Staré Město',x:481,y:481},{n:'Praha 2',d:'Vinohrady',x:673,y:699},{n:'Praha 3',d:'Žižkov',x:827,y:545},{n:'Praha 5',d:'Smíchov',x:268,y:799},{n:'Praha 6',d:'Dejvice',x:151,y:254},{n:'Praha 7',d:'Holešovice',x:676,y:200},{n:'Praha 8',d:'Karlín',x:815,y:381},{n:'Praha 10',d:'Vršovice',x:932,y:799}];
   var BTC_CZK = 2150000;               // fake display rate
-  var M_PER_UNIT = 11, WALK = 80;      // map units -> metres, metres per minute
+  var M_PER_UNIT = 6.133, WALK = 80;   // map px -> metres, metres per minute
 
-  /* fictional caches, deterministic so the map looks the same on reload */
+  /* fictional caches on land (pixel positions on praha.jpg), deterministic */
+  var SPOTS = [[549, 577, "extaze"], [296, 481, "trava"], [206, 791, "koks"], [684, 438, "extaze"], [621, 151, "trava"], [954, 611, "extaze"], [429, 604, "trava"], [612, 646, "extaze"], [124, 172, "pernik"], [222, 348, "koks"], [1028, 823, "koks"], [322, 891, "koks"], [717, 764, "pernik"], [995, 215, "koks"], [1054, 756, "extaze"], [730, 199, "extaze"], [939, 932, "lsd"], [215, 944, "trava"], [677, 810, "trava"], [895, 313, "trava"], [488, 512, "koks"], [520, 189, "koks"], [821, 434, "extaze"], [398, 250, "koks"], [240, 509, "lsd"], [136, 330, "extaze"], [434, 725, "lsd"], [153, 115, "pernik"], [785, 921, "koks"], [550, 414, "koks"]];
   var seed = 7; function rnd(){ seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
-  var CACHES = [];
-  for (var i = 0; i < 24; i++){
-    var p = KEYS[Math.floor(rnd()*KEYS.length)];
-    var x = 30 + rnd()*340, y = 30 + rnd()*400;
-    var stock = P[p].unit === 'g' ? 1 + Math.floor(rnd()*5) : 1 + Math.floor(rnd()*6);
-    var id = 'K' + (100 + Math.floor(rnd()*900)).toString(36).toUpperCase();
-    CACHES.push({id:id, p:p, x:x, y:y, stock:stock});
-  }
+  var CACHES = SPOTS.map(function(s){
+    var p = s[2];
+    return {id:'K' + (100 + Math.floor(rnd()*900)).toString(36).toUpperCase(), p:p, x:s[0], y:s[1],
+            stock: P[p].unit === 'g' ? 1 + Math.floor(rnd()*5) : 1 + Math.floor(rnd()*6)};
+  });
 
   var me = 2, filter = null, order = null, shown = false, touched = false;
   var $ = function(id){ return document.getElementById(id); };
@@ -603,8 +582,9 @@ body.locked{overflow:hidden}
       var el = document.createElementNS(NS,'g');
       el.setAttribute('class','cache' + (filter && c.p!==filter ? ' dim' : ''));
       el.setAttribute('transform','translate('+c.x.toFixed(1)+' '+c.y.toFixed(1)+')');
-      el.innerHTML = '<circle class="ring" r="16"/><circle r="16" fill="#111" stroke="#e4232d" stroke-width="2.5"/>' +
-        '<image href="p-'+c.p+'.jpg" x="-13" y="-13" width="26" height="26" preserveAspectRatio="xMidYMid slice" clip-path="url(#cc)"/>';
+      el.innerHTML = '<circle class="ring" r="25"/><circle r="25" fill="#111" stroke="#e4232d" stroke-width="4"/>' +
+        '<image href="p-'+c.p+'.jpg" x="-21" y="-21" width="42" height="42" preserveAspectRatio="xMidYMid slice" clip-path="url(#cc)"/>';
+      el.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); });
       el.addEventListener('click', function(){ cacheSheet(c); });
       g.appendChild(el);
     });
@@ -621,6 +601,49 @@ body.locked{overflow:hidden}
     var z = ZONES[me];
     $('ma-me').style.transform = 'translate('+z.x+'px,'+z.y+'px)';
   }
+
+  /* pan + zoom of the real map */
+  var view = {cx:0, cy:0, w:560};
+  function applyView(){
+    var svg=$('ma-svg'), r=svg.getBoundingClientRect(), asp=(r.height||1)/(r.width||1);
+    view.w=Math.max(300,Math.min(1188,view.w)); var h=view.w*asp;
+    view.cx=Math.max(view.w/2,Math.min(1188-view.w/2,view.cx)); view.cy=Math.max(Math.min(h/2,526),Math.min(1053-h/2,view.cy));
+    svg.setAttribute('viewBox',(view.cx-view.w/2)+' '+(view.cy-h/2)+' '+view.w+' '+h);
+  }
+  function centerOnMe(){ view.cx=ZONES[me].x; view.cy=ZONES[me].y; applyView(); }
+  (function(){
+    var box=document.querySelector('.ma-map'), drag=null;
+    box.addEventListener('pointerdown',function(e){ drag={x:e.clientX,y:e.clientY,cx:view.cx,cy:view.cy}; box.setPointerCapture(e.pointerId); });
+    box.addEventListener('pointermove',function(e){ if(!drag) return; var k=view.w/box.clientWidth;
+      view.cx=drag.cx-(e.clientX-drag.x)*k; view.cy=drag.cy-(e.clientY-drag.y)*k; applyView(); });
+    box.addEventListener('pointerup',function(){ drag=null; });
+    box.addEventListener('wheel',function(e){ e.preventDefault(); view.w*= e.deltaY>0?1.15:0.87; applyView(); },{passive:false});
+    $('zin').onclick=function(){ view.w*=0.75; applyView(); };
+    $('zout').onclick=function(){ view.w*=1.33; applyView(); };
+    $('zin').addEventListener('pointerdown',function(e){e.stopPropagation();}); $('zout').addEventListener('pointerdown',function(e){e.stopPropagation();});
+    window.addEventListener('resize',applyView);
+  })();
+
+  /* landing page pins = real caches inside the visible frame */
+  (function(){
+    var g=$('home-pins');
+    var pool=CACHES.filter(function(c){ return c.x>170 && c.x<1030 && c.y>390 && c.y<790 && !(Math.abs(c.x-560)<180 && c.y>430 && c.y<680); });
+    var pick=[pool[0]];   // spread pins out: greedy farthest-point
+    while (pick.length<5 && pick.length<pool.length){
+      var best=null, bd=-1;
+      pool.forEach(function(c){ if(pick.indexOf(c)>=0) return;
+        var d=Math.min.apply(null, pick.map(function(q){ return Math.hypot(q.x-c.x,q.y-c.y); }));
+        if(d>bd){ bd=d; best=c; } });
+      pick.push(best);
+    }
+    pick.forEach(function(c){
+      var el=document.createElementNS(NS,'g'); el.setAttribute('class','hpin');
+      el.setAttribute('transform','translate('+c.x+' '+(c.y-135)+') scale(2.6)');
+      el.innerHTML='<path d="M0 0c-18 0-26 14-22 26L0 52l22-26C26 14 18 0 0 0z" fill="#c4151e"/><circle cx="0" cy="20" r="14" fill="#e4232d"/><path d="M-6 16l6-4 6 4v8l-6 4-6-4z" fill="none" stroke="#fff" stroke-width="2"/>';
+      el.addEventListener('click',function(ev){ ev.stopPropagation(); touched=true; openMap(); setTimeout(function(){ cacheSheet(c); },350); });
+      g.appendChild(el);
+    });
+  })();
   function chips(){
     var h = '<button data-f="" class="'+(filter?'':'sel')+'">Vše</button>';
     KEYS.forEach(function(k){ h += '<button data-f="'+k+'" class="'+(filter===k?'sel':'')+'">'+P[k].n+'</button>'; });
@@ -631,12 +654,12 @@ body.locked{overflow:hidden}
   }
   function openMap(f){
     touched = true; filter = f || null; chips(); drawCaches();
-    $('mapapp').classList.add('on'); document.body.classList.add('locked');
+    $('mapapp').classList.add('on'); document.body.classList.add('locked'); requestAnimationFrame(centerOnMe);
     if (f) toast('Kešky se zbožím ' + P[f].n + ' kolem tebe');
   }
   function closeMap(){ $('mapapp').classList.remove('on'); document.body.classList.remove('locked'); }
   $('ma-back').onclick = closeMap;
-  $('ma-zone').onchange = function(){ me = +this.value; drawCaches(); };
+  $('ma-zone').onchange = function(){ me = +this.value; drawCaches(); centerOnMe(); };
 
   /* ---------- sheet ---------- */
   function sheet(html){ $('toast').classList.remove('on'); $('sheetbody').innerHTML = html; $('sheet').classList.add('on'); $('sheetbg').classList.add('on'); $('sheet').scrollTop=0; }
@@ -652,7 +675,7 @@ body.locked{overflow:hidden}
       var h = steps(1) + '<div class="cache-head"><img src="p-'+c.p+'.jpg" alt=""><div><h3 class="display">'+d.n+'</h3>' +
         '<p class="muted" style="margin:0">Keška #'+c.id+' · '+fmt(d.price)+' / 1 '+d.unit+'</p><span class="badge">Zbývá '+c.stock+' '+d.unit+'</span></div></div>';
       h += '<div class="sumrow"><span>Oblast</span><span>'+z.n+' – '+z.d+'</span></div>';
-      h += '<div class="sumrow"><span>Od tebe</span><span>'+dtxt(k)+'</span></div><br>';
+      h += '<div class="sumrow"><span>Od tebe</span><span>'+dtxt(k)+'</span></div><br><p class="note">Na mapě je přibližná poloha. Přesné místo a nápovědu dostaneš po zaplacení.</p>';
       h += '<p class="muted">Množství</p><div class="opts">';
       opts.forEach(function(q){ h += '<button class="opt'+(q===sel?' sel':'')+'" data-q="'+q+'"><b>'+q+' '+d.unit+'</b><small>'+fmt(q*d.price)+'</small></button>'; });
       h += '</div><button class="go" id="next">Rezervovat kešku · '+fmt(sel*d.price)+'</button>';
