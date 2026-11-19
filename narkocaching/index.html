@@ -246,6 +246,62 @@ body.locked{overflow:hidden}
 .spin i{width:46px;height:46px;border:4px solid #333;border-top-color:var(--red);border-radius:50%;animation:rot .8s linear infinite;margin-bottom:16px}
 @keyframes rot{to{transform:rotate(360deg)}}
 .drawer a{display:block;color:#fff;text-decoration:none;font-size:1.4rem;padding:12px 0;border-bottom:1px solid var(--line)}
+
+/* ===== HOW ===== */
+.how{margin:26px 0 10px}
+.how h2{font-size:clamp(1.8rem,7vw,2.6rem);margin:0 0 12px}
+.how ol{list-style:none;counter-reset:s;margin:0 0 18px;padding:0;display:grid;gap:8px}
+.how li{counter-increment:s;display:grid;grid-template-columns:38px 1fr;gap:2px 12px;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.how li::before{content:counter(s);grid-row:span 2;width:34px;height:34px;border-radius:50%;background:var(--red);
+  display:grid;place-items:center;font-family:Anton,sans-serif;font-size:1.1rem}
+.how li b{font-size:1rem}
+.how li span{color:var(--muted);font-size:.88rem;line-height:1.35}
+.map{cursor:pointer}
+
+/* ===== MAP APP ===== */
+.mapapp{position:fixed;inset:0;z-index:33;background:#0b0b0c;display:flex;flex-direction:column;
+  transform:translateY(100%);visibility:hidden;transition:transform .3s ease,visibility .3s}
+.mapapp.on{transform:none;visibility:visible}
+.ma-top{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.ma-top b{font-size:1.3rem;flex:1}
+.ma-back{background:none;border:0;color:#fff;font-size:1.5rem;padding:0 4px}
+.ma-live{color:var(--green);font-size:.8rem;display:flex;align-items:center;gap:6px}
+.ma-live .dot{width:8px;height:8px}
+.ma-where{display:flex;align-items:center;gap:10px;padding:10px 14px 4px;font-size:.9rem;color:#ddd}
+.ma-where select{flex:1;background:#141416;color:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;scrollbar-width:none}
+.chips button{flex:none;background:#141416;border:1px solid var(--line);color:#ddd;border-radius:20px;padding:6px 12px;font-size:.85rem}
+.chips button.sel{background:var(--red);border-color:var(--red);color:#fff}
+.ma-map{flex:1;min-height:0;position:relative}
+.ma-map svg{position:absolute;inset:0;width:100%;height:100%}
+.ma-lbl{font-family:Anton,sans-serif;font-size:11px;fill:#5d5d66;letter-spacing:1px;text-anchor:middle}
+.ma-you{font:700 9px Inter,sans-serif;fill:#8fb8ff}
+.ma-me{transition:transform .6s ease}
+.cache{cursor:pointer;transition:opacity .2s}
+.cache .ring{fill:none;stroke:var(--red);stroke-width:2;opacity:.6;transform-origin:center;animation:ring 2s infinite}
+@keyframes ring{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.8);opacity:0}}
+.cache.dim{opacity:.12;pointer-events:none}
+.cache.dim .ring{display:none}
+.ma-list{border-top:1px solid var(--line);padding:10px 14px calc(12px + env(safe-area-inset-bottom));background:#101012}
+.ma-list h4{margin:0 0 6px;font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.near{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);
+  color:#fff;padding:8px 0;text-align:left}
+.near:last-child{border:0}
+.near img{width:40px;height:30px;object-fit:cover;border-radius:6px;background:#000}
+.near span{flex:1;font-size:.92rem}
+.near small{display:block;color:var(--muted);font-size:.78rem}
+.near em{font-style:normal;color:var(--green);font-size:.82rem;white-space:nowrap}
+.cache-head{display:flex;gap:12px;align-items:center;margin:4px 0 12px}
+.cache-head img{width:96px;height:72px;object-fit:cover;border-radius:10px;background:#000}
+.badge{display:inline-block;background:rgba(47,210,122,.12);color:var(--green);border-radius:6px;padding:2px 8px;font-size:.78rem;font-weight:700}
+.after{background:#0d0d0f;border:1px dashed #3a3a42;border-radius:12px;padding:12px 14px;margin:12px 0;font-size:.88rem;color:#ddd}
+.after b{display:block;margin-bottom:6px;color:#fff}
+.after div{padding:2px 0}
+.timer{color:var(--red);font-weight:800}
+.coords{font-family:ui-monospace,Menlo,monospace;background:#0d0d0f;border-radius:10px;padding:14px;margin:14px 0;text-align:left;line-height:1.8}
+.redact{background:#e8e8e8;color:transparent;border-radius:2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.4}}
 </style>
 </head>
 <body>
@@ -295,7 +351,7 @@ body.locked{overflow:hidden}
 </section>
 
 <section class="live" id="mapa">
-  <svg class="map" viewBox="0 0 520 300" role="img" aria-label="Mapa Prahy s úkryty">
+  <svg class="map" data-hook="map" viewBox="0 0 520 300" role="img" aria-label="Mapa Prahy s úkryty">
     <defs>
       <pattern id="streets" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
         <path d="M0 20h40M20 0v40" stroke="#26262b" stroke-width="1.2"/>
@@ -371,6 +427,18 @@ body.locked{overflow:hidden}
   </span>
 </button>
 
+<section class="how" id="jak">
+  <h2 class="display">Jak to funguje</h2>
+  <ol>
+    <li><b>Otevři mapu</b><span>Uvidíš kešky kolem sebe. Jako auta v taxi appce, jen místo aut zboží.</span></li>
+    <li><b>Vyber kešku</b><span>Zelí 300 m od tebe? Cukr za rohem? Klikni a zvol množství.</span></li>
+    <li><b>Zaplať v BTC</b><span>Bez registrace. Bez jména. Keška je pak 30 minut jen tvoje.</span></li>
+    <li><b>Dostaneš souřadnice</b><span>Přesné GPS, fotku místa a nápovědu, třeba „pod košem u lavičky“.</span></li>
+    <li><b>Vyzvedni</b><span>Bez kontaktu. Nikoho nepotkáš.</span></li>
+  </ol>
+  <button class="cta display" data-hook="openmap">Otevřít mapu kešek <span aria-hidden="true">→</span></button>
+</section>
+
 <footer>
   Preventivní protidrogová kampaň. Nic se tu neprodává.
   <button data-hook="footer">Co to je?</button>
@@ -379,8 +447,39 @@ body.locked{overflow:hidden}
 </div>
 
 
+
+<section class="mapapp" id="mapapp" aria-label="Mapa kešek">
+  <div class="ma-top">
+    <button class="ma-back" id="ma-back" aria-label="Zpět">←</button>
+    <b class="display">Mapa kešek</b>
+    <span class="ma-live"><span class="dot"></span><span id="ma-count">0</span> aktivních</span>
+  </div>
+  <div class="ma-where"><span>📍 Kde jsi?</span><select id="ma-zone"><option value="0">Praha 1 – Staré Město</option><option value="1">Praha 2 – Vinohrady</option><option value="2" selected>Praha 3 – Žižkov</option><option value="3">Praha 5 – Smíchov</option><option value="4">Praha 6 – Dejvice</option><option value="5">Praha 7 – Holešovice</option><option value="6">Praha 8 – Karlín</option><option value="7">Praha 10 – Vršovice</option></select></div>
+  <div class="chips" id="ma-chips"></div>
+  <div class="ma-map">
+    <svg id="ma-svg" viewBox="0 0 400 460" role="img" aria-label="Mapa kešek v Praze">
+      <defs>
+        <pattern id="mstreets" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(14)">
+          <path d="M0 13h26M13 0v26" stroke="#23232a" stroke-width="1"/>
+        </pattern>
+        <clipPath id="cc"><circle r="13"/></clipPath>
+      </defs>
+      <rect width="400" height="460" fill="#0e0e11"/>
+      <rect width="400" height="460" fill="url(#mstreets)"/>
+      <g stroke="#34343c" stroke-width="2.4" fill="none" stroke-linecap="round">
+        <path d="M0 200q120-20 200 30t200-10"/><path d="M0 330q140-40 250 0t150-20"/>
+        <path d="M90 0q20 230-10 460"/><path d="M300 0q-30 240 30 460"/>
+        <path d="M20 460L380 20"/><path d="M10 40l380 400"/><path d="M0 90q200 30 400-40"/>
+      </g>
+      <path d="M250 0c-40 50 20 110-40 160s-80 70-60 140 -40 110 -10 160" fill="none" stroke="#1f3e49" stroke-width="20" stroke-linecap="round"/>
+      <g opacity=".9"><text x="200" y="265" class="ma-lbl">PRAHA 1</text><text x="245" y="330" class="ma-lbl">PRAHA 2</text><text x="310" y="265" class="ma-lbl">PRAHA 3</text><text x="120" y="340" class="ma-lbl">PRAHA 5</text><text x="105" y="165" class="ma-lbl">PRAHA 6</text><text x="205" y="150" class="ma-lbl">PRAHA 7</text><text x="300" y="170" class="ma-lbl">PRAHA 8</text><text x="320" y="370" class="ma-lbl">PRAHA 10</text></g>
+      <g id="ma-caches"></g>
+      <g id="ma-me" class="ma-me"><circle r="26" fill="#2d7cf6" opacity=".18"/><circle r="8" fill="#2d7cf6" stroke="#fff" stroke-width="3"/><text y="-14" text-anchor="middle" class="ma-you">TY</text></g>
+    </svg>
+  </div>
+  <div class="ma-list"><h4>Nejblíž tobě</h4><div id="ma-near"></div></div>
+</section>
 <div class="toast" id="toast"></div>
-<div class="cartbar" id="cartbar" hidden><button id="cartbtn"><span><span class="n" id="cartn">1</span>Košík</span><span id="carttotal"></span></button></div>
 <div class="sheet-bg" id="sheetbg"></div>
 <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Objednávka">
   <button class="x" id="sheetx" aria-label="Zavřít">×</button>
@@ -421,6 +520,11 @@ body.locked{overflow:hidden}
     </div>
 
     <div class="box">
+      <h3>Našel jsi podezřelý balíček?</h3>
+      <p>Nesahej na něj a zavolej policii na 158. Kešku nemusí najít jen ten, kdo zaplatil. Může ji najít i dítě nebo pes.</p>
+    </div>
+
+    <div class="box">
       <h3>Nejnebezpečnější část „nabídky“ je to, co v ní není napsané</h3>
       <p>Na ulici ani v úkrytu nikdo nekontroluje složení ani dávku. Neznámé příměsi a nečekaně silné dávky patří k nejčastějším důvodům otrav a předávkování.</p>
     </div>
@@ -450,6 +554,7 @@ body.locked{overflow:hidden}
 (function(){
   function fit(){ document.documentElement.style.setProperty('--z', window.innerWidth <= 720 ? (window.innerWidth/470).toFixed(4) : 1); }
   fit(); window.addEventListener('resize', fit);
+
   var P = {
     koks:  {n:'Mouka', a:'koks',   price:4000, unit:'g',  q:[1,2,5],
       x:'Kokain z ulice bývá ředěný. Často se v něm najde levamisol, veterinární lék proti parazitům, který může zničit bílé krvinky. Kokain zvyšuje riziko infarktu a mrtvice i u mladých lidí bez potíží se srdcem.'},
@@ -462,101 +567,146 @@ body.locked{overflow:hidden}
     lsd:   {n:'Papír', a:'LSD',    price:350,  unit:'ks', q:[1,2,5],
       x:'Papírky prodávané jako LSD mohou obsahovat látky ze skupiny NBOMe, které jsou nebezpečné už v nepatrném množství a mají na svědomí i úmrtí.'}
   };
-  var ZONES = [
-    {n:'Praha 2', d:'Vinohrady, Nusle', eta:'~15 min'},
-    {n:'Praha 3', d:'Žižkov', eta:'~20 min'},
-    {n:'Praha 5', d:'Smíchov, Anděl', eta:'~20 min'},
-    {n:'Praha 7', d:'Holešovice, Letná', eta:'~25 min'},
-    {n:'Praha 8', d:'Karlín, Libeň', eta:'~30 min'}
-  ];
-  var BTC_CZK = 2150000; // fake display rate
-  var cart = [], zone = null, shown = false, touched = false;
+  var KEYS = Object.keys(P);
+  var ZONES = [{n:'Praha 1',d:'Staré Město',x:200,y:235},{n:'Praha 2',d:'Vinohrady',x:245,y:300},{n:'Praha 3',d:'Žižkov',x:310,y:235},{n:'Praha 5',d:'Smíchov',x:120,y:310},{n:'Praha 6',d:'Dejvice',x:105,y:135},{n:'Praha 7',d:'Holešovice',x:205,y:120},{n:'Praha 8',d:'Karlín',x:300,y:140},{n:'Praha 10',d:'Vršovice',x:320,y:340}];
+  var BTC_CZK = 2150000;               // fake display rate
+  var M_PER_UNIT = 11, WALK = 80;      // map units -> metres, metres per minute
+
+  /* fictional caches, deterministic so the map looks the same on reload */
+  var seed = 7; function rnd(){ seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+  var CACHES = [];
+  for (var i = 0; i < 24; i++){
+    var p = KEYS[Math.floor(rnd()*KEYS.length)];
+    var x = 30 + rnd()*340, y = 30 + rnd()*400;
+    var stock = P[p].unit === 'g' ? 1 + Math.floor(rnd()*5) : 1 + Math.floor(rnd()*6);
+    var id = 'K' + (100 + Math.floor(rnd()*900)).toString(36).toUpperCase();
+    CACHES.push({id:id, p:p, x:x, y:y, stock:stock});
+  }
+
+  var me = 2, filter = null, order = null, shown = false, touched = false;
   var $ = function(id){ return document.getElementById(id); };
   var fmt = function(n){ return n.toLocaleString('cs-CZ') + ' Kč'; };
-  var total = function(){ return cart.reduce(function(s,i){ return s + i.qty * P[i.p].price; }, 0); };
+  var NS = 'http://www.w3.org/2000/svg';
+
+  function zoneOf(c){ var best=0, d=1e9; ZONES.forEach(function(z,i){ var k=Math.hypot(z.x-c.x,z.y-c.y); if(k<d){d=k;best=i;} }); return ZONES[best]; }
+  function dist(c){ var z=ZONES[me]; var m=Math.round(Math.hypot(z.x-c.x, z.y-c.y)*M_PER_UNIT/10)*10; return {m:Math.max(m,60), min:Math.max(1,Math.ceil(m/WALK))}; }
+  function dtxt(d){ return (d.m >= 1000 ? (d.m/1000).toFixed(1).replace('.',',')+' km' : d.m+' m') + ' · ' + d.min + ' min pěšky'; }
 
   /* ---------- toast ---------- */
   var tt;
   function toast(msg){ var t=$('toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(function(){t.classList.remove('on');},2200); }
 
+  /* ---------- map app ---------- */
+  function drawCaches(){
+    var g = $('ma-caches'); g.innerHTML = '';
+    CACHES.forEach(function(c){
+      var el = document.createElementNS(NS,'g');
+      el.setAttribute('class','cache' + (filter && c.p!==filter ? ' dim' : ''));
+      el.setAttribute('transform','translate('+c.x.toFixed(1)+' '+c.y.toFixed(1)+')');
+      el.innerHTML = '<circle class="ring" r="16"/><circle r="16" fill="#111" stroke="#e4232d" stroke-width="2.5"/>' +
+        '<image href="p-'+c.p+'.jpg" x="-13" y="-13" width="26" height="26" preserveAspectRatio="xMidYMid slice" clip-path="url(#cc)"/>';
+      el.addEventListener('click', function(){ cacheSheet(c); });
+      g.appendChild(el);
+    });
+    var vis = CACHES.filter(function(c){ return !filter || c.p===filter; });
+    $('ma-count').textContent = vis.length;
+    var near = vis.slice().sort(function(a,b){ return dist(a).m - dist(b).m; }).slice(0,3);
+    $('ma-near').innerHTML = near.map(function(c){
+      var d=P[c.p], k=dist(c);
+      return '<button class="near" data-c="'+c.id+'"><img src="p-'+c.p+'.jpg" alt=""><span>'+d.n+' · keška #'+c.id+'<small>'+zoneOf(c).n+' – '+zoneOf(c).d+'</small></span><em>'+dtxt(k).split(' · ')[0]+'</em></button>';
+    }).join('');
+    Array.prototype.forEach.call(document.querySelectorAll('#ma-near [data-c]'), function(b){
+      b.onclick = function(){ cacheSheet(CACHES.filter(function(c){return c.id===b.dataset.c;})[0]); };
+    });
+    var z = ZONES[me];
+    $('ma-me').style.transform = 'translate('+z.x+'px,'+z.y+'px)';
+  }
+  function chips(){
+    var h = '<button data-f="" class="'+(filter?'':'sel')+'">Vše</button>';
+    KEYS.forEach(function(k){ h += '<button data-f="'+k+'" class="'+(filter===k?'sel':'')+'">'+P[k].n+'</button>'; });
+    $('ma-chips').innerHTML = h;
+    Array.prototype.forEach.call(document.querySelectorAll('#ma-chips [data-f]'), function(b){
+      b.onclick = function(){ filter = b.dataset.f || null; chips(); drawCaches(); };
+    });
+  }
+  function openMap(f){
+    touched = true; filter = f || null; chips(); drawCaches();
+    $('mapapp').classList.add('on'); document.body.classList.add('locked');
+    if (f) toast('Kešky se zbožím ' + P[f].n + ' kolem tebe');
+  }
+  function closeMap(){ $('mapapp').classList.remove('on'); document.body.classList.remove('locked'); }
+  $('ma-back').onclick = closeMap;
+  $('ma-zone').onchange = function(){ me = +this.value; drawCaches(); };
+
   /* ---------- sheet ---------- */
   function sheet(html){ $('toast').classList.remove('on'); $('sheetbody').innerHTML = html; $('sheet').classList.add('on'); $('sheetbg').classList.add('on'); $('sheet').scrollTop=0; }
-  function closeSheet(){ $('sheet').classList.remove('on'); $('sheetbg').classList.remove('on'); }
+  function closeSheet(){ $('sheet').classList.remove('on'); $('sheetbg').classList.remove('on'); clearInterval(tick); }
   $('sheetx').onclick = closeSheet; $('sheetbg').onclick = closeSheet;
   function steps(k){ var h='<div class="steps">'; for(var i=1;i<=3;i++) h+='<i class="'+(i<=k?'on':'')+'"></i>'; return h+'</div>'; }
-  function icon(p){ var el=document.querySelector('[data-p="'+p+'"] .img'); return el ? el.outerHTML : ''; }
 
-  function productSheet(p){
-    var d=P[p], sel=d.q[0];
+  function cacheSheet(c){
+    var d = P[c.p], z = zoneOf(c), k = dist(c);
+    var opts = d.q.filter(function(q){ return q <= c.stock; }); if (!opts.length) opts=[1];
+    var sel = opts[0];
     function render(){
-      var h = steps(1) + '<div class="prod-head">'+icon(p)+'<div><h3 class="display">'+d.n+'</h3><p class="muted">'+fmt(d.price)+' / 1 '+d.unit+'</p></div></div>';
+      var h = steps(1) + '<div class="cache-head"><img src="p-'+c.p+'.jpg" alt=""><div><h3 class="display">'+d.n+'</h3>' +
+        '<p class="muted" style="margin:0">Keška #'+c.id+' · '+fmt(d.price)+' / 1 '+d.unit+'</p><span class="badge">Zbývá '+c.stock+' '+d.unit+'</span></div></div>';
+      h += '<div class="sumrow"><span>Oblast</span><span>'+z.n+' – '+z.d+'</span></div>';
+      h += '<div class="sumrow"><span>Od tebe</span><span>'+dtxt(k)+'</span></div><br>';
       h += '<p class="muted">Množství</p><div class="opts">';
-      d.q.forEach(function(q){ h += '<button class="opt'+(q===sel?' sel':'')+'" data-q="'+q+'"><b>'+q+' '+d.unit+'</b><small>'+fmt(q*d.price)+'</small></button>'; });
-      h += '</div><button class="go" id="add">Přidat do košíku · '+fmt(sel*d.price)+'</button>';
+      opts.forEach(function(q){ h += '<button class="opt'+(q===sel?' sel':'')+'" data-q="'+q+'"><b>'+q+' '+d.unit+'</b><small>'+fmt(q*d.price)+'</small></button>'; });
+      h += '</div><button class="go" id="next">Rezervovat kešku · '+fmt(sel*d.price)+'</button>';
       sheet(h);
       Array.prototype.forEach.call(document.querySelectorAll('#sheet [data-q]'), function(b){ b.onclick=function(){ sel=+b.dataset.q; render(); }; });
-      $('add').onclick = function(){
-        var ex = cart.filter(function(i){return i.p===p;})[0];
-        if (ex) ex.qty += sel; else cart.push({p:p, qty:sel});
-        updateBar(); closeSheet(); toast('Přidáno do košíku');
-      };
+      $('next').onclick = function(){ order = {c:c, qty:sel, total:sel*d.price}; paySheet(); };
     }
     render();
   }
 
-  function updateBar(){
-    var n = cart.length;
-    $('cartbar').hidden = !n;
-    $('cartn').textContent = n;
-    $('carttotal').textContent = fmt(total()) + ' →';
-  }
-
-  function cartLines(){
-    return cart.map(function(i){ var d=P[i.p]; return '<div class="sumrow"><span>'+d.n+' × '+i.qty+' '+d.unit+'</span><span>'+fmt(i.qty*d.price)+'</span></div>'; }).join('');
-  }
-
-  function zoneSheet(){
-    var h = steps(2) + '<h3 class="display">Oblast výdeje</h3><p class="muted">Přesné souřadnice úkrytu a fotku místa dostaneš po zaplacení.</p><div class="list">';
-    ZONES.forEach(function(z,i){ h += '<button class="opt'+(zone===i?' sel':'')+'" data-z="'+i+'"><span><b>'+z.n+'</b><small>'+z.d+'</small></span><span class="eta">● '+z.eta+'</span></button>'; });
-    h += '</div>' + cartLines() + '<div class="sumrow total"><span>Celkem</span><span>'+fmt(total())+'</span></div><br><button class="go" id="next" '+(zone===null?'disabled':'')+'>Pokračovat k platbě</button>';
-    sheet(h);
-    Array.prototype.forEach.call(document.querySelectorAll('#sheet [data-z]'), function(b){ b.onclick=function(){ zone=+b.dataset.z; zoneSheet(); }; });
-    $('next').onclick = paySheet;
-  }
-
+  var tick;
   function paySheet(){
-    var btc = (total()/BTC_CZK).toFixed(5).replace('.', ',');
-    var z = ZONES[zone];
-    var h = steps(3) + '<h3 class="display">Rekapitulace</h3><p class="muted">Bez registrace. Bez osobních údajů.</p>';
-    h += cartLines() + '<div class="sumrow"><span>Výdej</span><span>'+z.n+' · '+z.eta+'</span></div>';
-    h += '<div class="sumrow total"><span>Celkem</span><span>'+fmt(total())+'</span></div>';
+    var c = order.c, d = P[c.p], z = zoneOf(c);
+    var btc = (order.total/BTC_CZK).toFixed(5).replace('.', ',');
+    var h = steps(2) + '<h3 class="display">Rekapitulace</h3><p class="muted">Keška je rezervovaná na <span class="timer" id="timer">30:00</span>. Bez registrace, bez jména.</p>';
+    h += '<div class="sumrow"><span>'+d.n+' × '+order.qty+' '+d.unit+'</span><span>'+fmt(order.total)+'</span></div>';
+    h += '<div class="sumrow"><span>Keška</span><span>#'+c.id+' · '+z.n+'</span></div>';
+    h += '<div class="sumrow"><span>Od tebe</span><span>'+dtxt(dist(c))+'</span></div>';
+    h += '<div class="sumrow total"><span>Celkem</span><span>'+fmt(order.total)+'</span></div>';
+    h += '<div class="after"><b>Po zaplacení dostaneš</b><div>📍 Přesné GPS souřadnice kešky</div><div>📷 Fotku místa</div><div>💬 Nápovědu, třeba „pod košem u lavičky“</div></div>';
     h += '<div class="pay"><span class="btc">₿</span><span><b>Bitcoin (BTC)</b><small>≈ '+btc+' BTC · potvrzení do 10 min</small></span></div>';
     h += '<label class="check"><input type="checkbox" id="age"> Je mi 18 let a objednávám na vlastní odpovědnost.</label>';
     h += '<button class="go" id="pay" disabled>Zaplatit '+btc+' BTC</button><div class="secure">🔒 Šifrované spojení · anonymní platba</div>';
     sheet(h);
+    var left = 1800; clearInterval(tick);
+    tick = setInterval(function(){ left--; var t=$('timer'); if(!t) return clearInterval(tick);
+      t.textContent = Math.floor(left/60) + ':' + ('0'+left%60).slice(-2); }, 1000);
     $('age').onchange = function(){ $('pay').disabled = !this.checked; };
     $('pay').onclick = function(){
+      clearInterval(tick);
       sheet('<div class="spin"><i></i><b>Ověřuji platbu v síti…</b><p class="muted">Nezavírej okno.</p></div>');
-      setTimeout(function(){ closeSheet(); open('pay'); }, 2200);
+      setTimeout(function(){
+        sheet('<div class="spin" style="padding:24px 0 10px"><b style="color:var(--green)">✓ Platba přijata</b><p class="muted">Odesílám souřadnice kešky #'+c.id+'…</p></div>' +
+          '<div class="coords">📍 <span class="redact">50.08241</span> N, <span class="redact">14.43872</span> E<br>📷 <span class="redact">foto_misto.jpg</span><br>💬 <span class="redact">pod košem u lavičky</span></div>');
+        setTimeout(function(){ closeSheet(); closeMap(); open('pay'); }, 2200);
+      }, 2000);
     };
   }
-
-  $('cartbtn').onclick = zoneSheet;
 
   /* ---------- reveal ---------- */
   var KICK = { footer:'Chtěl jsi vědět, co to je', timer:'Byl jsi tu dost dlouho' };
   function open(kind){
-    var hit=$('hit'), t, x;
-    if (kind === 'pay' && cart.length){
-      $('hit-kicker').textContent = 'Chtěl jsi zaplatit ' + fmt(total());
-      t = cart.map(function(i){ return P[i.p].n+' („'+P[i.p].a+'“) '+i.qty+' '+P[i.p].unit; }).join(', ') + ', výdej ' + ZONES[zone].n;
-      x = cart.map(function(i){ return P[i.p].x; }).join(' ') + ' A úkryt? Mohl být prázdný. Nebo sledovaný.';
+    var t, x;
+    if (kind === 'pay' && order){
+      var d = P[order.c.p], z = zoneOf(order.c);
+      $('hit-kicker').textContent = 'Chtěl jsi zaplatit ' + fmt(order.total);
+      t = d.n + ' (' + d.a + ') ' + order.qty + ' ' + d.unit + ' z kešky #' + order.c.id + ', ' + z.n;
+      x = d.x + ' Souřadnice by ti přišly. Ale kdo tam balíček dal, nevíš. Kdo to místo sleduje, nevíš. A co v něm opravdu je, neví nikdo.';
     } else {
       $('hit-kicker').textContent = KICK[kind] || 'Kliknul jsi';
       t = 'A to stačilo.';
       x = 'Přesně tak snadno se to na skutečných webech začíná. Jenže tam pak nikdo nenapíše, co je pravda.';
     }
-    $('hit-title').textContent = t; $('hit-text').textContent = x; hit.hidden = false;
+    $('hit-title').textContent = t; $('hit-text').textContent = x; $('hit').hidden = false;
     var g=$('glitch'); g.classList.remove('flash'); void g.offsetWidth; g.classList.add('flash');
     setTimeout(function(){
       $('reveal').classList.add('on'); document.body.classList.add('locked'); shown = true;
@@ -574,15 +724,15 @@ body.locked{overflow:hidden}
     if (!el) return;
     e.preventDefault(); touched = true;
     switch (el.getAttribute('data-hook')){
-      case 'product': productSheet(el.getAttribute('data-p')); break;
+      case 'product': openMap(el.getAttribute('data-p')); break;
+      case 'pin': case 'map': case 'openmap': openMap(); break;
       case 'cta': go('offer'); break;
-      case 'pin': toast('Úkryt aktivní. Nejdřív si vyber z nabídky.'); setTimeout(function(){ go('offer'); }, 700); break;
       case 'banner': toast('Brno a Ostrava: spuštění brzy.'); break;
       case 'logo': window.scrollTo({top:0, behavior:'smooth'}); break;
       case 'menu':
-        sheet('<div class="drawer"><a href="#offer" data-nav="offer">Nabídka</a><a href="#mapa" data-nav="mapa">Mapa úkrytů</a><a href="#" data-nav="cart">Košík</a></div>');
+        sheet('<div class="drawer"><a href="#" data-nav="map">Mapa kešek</a><a href="#offer" data-nav="offer">Nabídka</a><a href="#jak" data-nav="jak">Jak to funguje</a></div>');
         Array.prototype.forEach.call(document.querySelectorAll('[data-nav]'), function(a){ a.onclick=function(ev){ ev.preventDefault(); closeSheet();
-          if (a.dataset.nav==='cart'){ cart.length ? zoneSheet() : toast('Košík je prázdný.'); } else go(a.dataset.nav); }; });
+          if (a.dataset.nav==='map') openMap(); else go(a.dataset.nav); }; });
         break;
       case 'footer': open('footer'); break;
     }
@@ -591,13 +741,12 @@ body.locked{overflow:hidden}
   // Visitors who only look and never start an order still get the message.
   setTimeout(function(){ if (!shown && !touched) open('timer'); }, 90000);
 
-  // Live-looking (fake) counter.
   var users = 1842;
   setInterval(function(){ users += Math.round((Math.random() - .45) * 12); $('users').textContent = users.toLocaleString('cs-CZ'); }, 2500);
 
   $('share').addEventListener('click', function(){
     var url = location.href.split('#')[0];
-    if (navigator.share) { navigator.share({title:'Narkocaching', text:'Zkus si objednat.', url:url}).catch(function(){}); return; }
+    if (navigator.share) { navigator.share({title:'Narkocaching', text:'Najdi si kešku.', url:url}).catch(function(){}); return; }
     try { navigator.clipboard.writeText(url).then(function(){ $('share-msg').hidden = false; }); } catch(_) {}
   });
 })();
