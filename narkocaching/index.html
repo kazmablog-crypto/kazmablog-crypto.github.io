@@ -85,7 +85,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:18p
   background:linear-gradient(180deg,#18181b,#101012);padding:16px;display:grid;
   grid-template-columns:auto 1fr;grid-template-rows:auto auto;gap:6px 12px;text-align:left;color:inherit}
 .card:nth-child(4){grid-column:2 / span 2}
-.card .img{width:80px;height:64px;grid-row:1}
+.card .img{width:100px;height:75px;grid-row:1;object-fit:contain;mix-blend-mode:lighten}
 .card h3{margin:4px 0 0;font-size:1.5rem;line-height:1}
 .card small{display:block;color:#ccc;font-family:Inter,sans-serif;text-transform:none;font-size:.85rem}
 .card .qty{grid-column:1;color:#ddd}
@@ -154,7 +154,7 @@ body.locked{overflow:hidden}
   .live{grid-template-columns:1fr}
   .grid{grid-template-columns:1fr 1fr;gap:10px}
   .card,.card:nth-child(4){grid-column:span 1;padding:12px;grid-template-columns:1fr}
-  .card .img{width:64px;height:50px}
+  .card .img{width:96px;height:72px}
   .card h3{font-size:1.25rem}
   .price{font-size:1.3rem}
   .cart{width:48px;height:36px}
@@ -186,7 +186,7 @@ body.locked{overflow:hidden}
 .sheet h3{margin:0 0 4px;font-size:1.8rem}
 .sheet .muted{color:var(--muted);font-size:.9rem;margin:0 0 14px}
 .prod-head{display:flex;gap:14px;align-items:center;margin-bottom:14px}
-.prod-head svg{width:90px;height:72px;flex:none;background:#0d0d0f;border-radius:12px;padding:6px}
+.prod-head .img{width:110px;height:82px;flex:none;background:#000;border-radius:12px;object-fit:contain}
 .opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 16px}
 .opt{background:#0d0d0f;border:2px solid var(--line);color:#fff;border-radius:10px;padding:12px 6px;text-align:center}
 .opt b{display:block;font-size:1.1rem}
@@ -297,32 +297,32 @@ body.locked{overflow:hidden}
   <h2 class="display">Aktuální nabídka</h2>
   <div class="grid">
     <button class="card" data-hook="product" data-p="koks">
-      <svg class="img" viewBox="0 0 80 64" aria-hidden="true"><path d="M8 54q32-60 64 0z" fill="#f5f5f5"/><ellipse cx="40" cy="55" rx="34" ry="5" fill="#fff" opacity=".6"/></svg>
-      <div><h3 class="display">Mouka</h3><small>(„koks“)</small></div>
+      <img class="img" src="p-koks.jpg" alt="" width="320" height="240">
+      <div><h3 class="display">Mouka</h3></div>
       <span class="qty">1 g</span>
       <div class="row"><span class="price display">4 000 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
     </button>
     <button class="card" data-hook="product" data-p="trava">
-      <svg class="img" viewBox="0 0 80 64" aria-hidden="true"><g fill="#6b8f3a"><ellipse cx="30" cy="38" rx="18" ry="12"/><ellipse cx="50" cy="36" rx="16" ry="11" fill="#7fa548"/><ellipse cx="42" cy="46" rx="20" ry="9" fill="#55732c"/></g></svg>
-      <div><h3 class="display">Zelí</h3><small>(„tráva“)</small></div>
+      <img class="img" src="p-trava.jpg" alt="" width="320" height="240">
+      <div><h3 class="display">Zelí</h3></div>
       <span class="qty">1 g</span>
       <div class="row"><span class="price display">600 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
     </button>
     <button class="card" data-hook="product" data-p="pernik">
-      <svg class="img" viewBox="0 0 80 64" aria-hidden="true"><g fill="#dfe3e8" stroke="#fff" stroke-width="1"><path d="M10 40l12-14 10 8-6 14z"/><path d="M30 30l14-12 8 16-12 10z"/><path d="M48 44l12-16 10 12-8 12z"/><path d="M24 50l10-6 8 8-12 4z"/></g></svg>
-      <div><h3 class="display">Peří</h3><small>(„perník“)</small></div>
+      <img class="img" src="p-pernik.jpg" alt="" width="320" height="240">
+      <div><h3 class="display">Peří</h3></div>
       <span class="qty">1 g</span>
       <div class="row"><span class="price display">1 500 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
     </button>
     <button class="card" data-hook="product" data-p="extaze">
-      <svg class="img" viewBox="0 0 80 64" aria-hidden="true"><g fill="#e9e9ee" stroke="#bbb"><ellipse cx="24" cy="40" rx="15" ry="11"/><ellipse cx="50" cy="28" rx="15" ry="11"/><ellipse cx="56" cy="48" rx="15" ry="11"/></g><g fill="none" stroke="#999" stroke-width="1.5"><path d="M18 42q6 5 12 0M44 30q6 5 12 0M50 50q6 5 12 0"/></g></svg>
-      <div><h3 class="display">Cukr</h3><small>(„extáze“)</small></div>
+      <img class="img" src="p-extaze.jpg" alt="" width="320" height="240">
+      <div><h3 class="display">Cukr</h3></div>
       <span class="qty">1 ks</span>
       <div class="row"><span class="price display">400 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
     </button>
     <button class="card" data-hook="product" data-p="lsd">
-      <svg class="img" viewBox="0 0 80 64" aria-hidden="true"><rect x="18" y="8" width="44" height="44" fill="#ece7d8" transform="rotate(-10 40 30)"/><circle cx="40" cy="30" r="11" fill="none" stroke="#444" stroke-width="2"/><path d="M35 28h.1M45 28h.1" stroke="#444" stroke-width="3" stroke-linecap="round"/><path d="M35 34q5 4 10 0" fill="none" stroke="#444" stroke-width="2"/></svg>
-      <div><h3 class="display">Papír</h3><small>(„LSD“)</small></div>
+      <img class="img" src="p-lsd.jpg" alt="" width="320" height="240">
+      <div><h3 class="display">Papír</h3></div>
       <span class="qty">1 ks</span>
       <div class="row"><span class="price display">350 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
     </button>
@@ -453,7 +453,7 @@ body.locked{overflow:hidden}
   function productSheet(p){
     var d=P[p], sel=d.q[0];
     function render(){
-      var h = steps(1) + '<div class="prod-head">'+icon(p)+'<div><h3 class="display">'+d.n+'</h3><p class="muted">(„'+d.a+'“) · '+fmt(d.price)+' / 1 '+d.unit+'</p></div></div>';
+      var h = steps(1) + '<div class="prod-head">'+icon(p)+'<div><h3 class="display">'+d.n+'</h3><p class="muted">'+fmt(d.price)+' / 1 '+d.unit+'</p></div></div>';
       h += '<p class="muted">Množství</p><div class="opts">';
       d.q.forEach(function(q){ h += '<button class="opt'+(q===sel?' sel':'')+'" data-q="'+q+'"><b>'+q+' '+d.unit+'</b><small>'+fmt(q*d.price)+'</small></button>'; });
       h += '</div><button class="go" id="add">Přidat do košíku · '+fmt(sel*d.price)+'</button>';
@@ -476,7 +476,7 @@ body.locked{overflow:hidden}
   }
 
   function cartLines(){
-    return cart.map(function(i){ var d=P[i.p]; return '<div class="sumrow"><span>'+d.n+' („'+d.a+'“) × '+i.qty+' '+d.unit+'</span><span>'+fmt(i.qty*d.price)+'</span></div>'; }).join('');
+    return cart.map(function(i){ var d=P[i.p]; return '<div class="sumrow"><span>'+d.n+' × '+i.qty+' '+d.unit+'</span><span>'+fmt(i.qty*d.price)+'</span></div>'; }).join('');
   }
 
   function zoneSheet(){
