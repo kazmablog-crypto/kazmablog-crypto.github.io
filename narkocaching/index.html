@@ -501,7 +501,6 @@ body.locked{overflow:hidden}
       <p>V roce 2017 nizozemská policie potají převzala darkwebové tržiště <b>Hansa</b> a zhruba měsíc ho dál provozovala, jako by se nic nestalo. Sbírala přitom údaje o kupujících.</p>
       <p><b>Nevíš, kdo je na druhé straně. Dealer, podvodník, nebo policie.</b></p>
       <p class="src">Zdroj: Europol, operace Bayonet (2017).</p>
-      <button class="next" id="stopNext">Pokračovat</button>
     </div>
   </div>
 </section>
@@ -786,8 +785,9 @@ body.locked{overflow:hidden}
     var t = 350 + els.length * 260;
     setTimeout(function(){ $('stopSaved').classList.add('on'); }, t + 300);
     setTimeout(function(){ $('stopMsg').classList.add('on'); }, t + 1600);
+    // no button: the campaign reveal follows on its own once the message has had time to sink in
+    setTimeout(function(){ $('stop').classList.remove('on'); open('pay'); }, t + 1600 + 12000);
   }
-  $('stopNext').onclick = function(){ $('stop').classList.remove('on'); open('pay'); };
 
   /* ---------- reveal ---------- */
   var KICK = { footer:'Chtěl jsi vědět, co to je', timer:'Byl jsi tu dost dlouho' };
