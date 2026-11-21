@@ -214,7 +214,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     orient.alpha = e.alpha; orient.beta = e.beta; orient.gamma = e.gamma; orient.ok = true; orient.count++;
   }
   var orient = {alpha:0,beta:90,gamma:0,ok:false,abs:false,count:0};
-  var orientListening = false;
+  var orientListening = false, permState = null;
   function listenOrientation(){
     if (orientListening) return; orientListening = true;
     window.addEventListener('deviceorientationabsolute', onOrient, true);
@@ -224,8 +224,8 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     // listen in every case: where permission is refused no events arrive, where it is granted (or not needed) they do
     var ask = (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function')
       ? DeviceOrientationEvent.requestPermission() : Promise.resolve('granted');
-    return ask.then(function(r){ if (r !== 'granted') log('orientace: ' + r); listenOrientation(); })
-              .catch(function(e){ log('orientace: '+e); listenOrientation(); });
+    return ask.then(function(r){ permState = r; if (r !== 'granted') log('orientace: ' + r); listenOrientation(); })
+              .catch(function(e){ permState = 'error'; log('orientace: '+e); listenOrientation(); });
   }
 
   /* ---------- nav UI ---------- */
@@ -337,7 +337,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     var off = behind || Math.abs(v.x) > 1;
     $('edgeL').style.display = off && (behind ? v.x > 0 : v.x < 0) ? 'block' : 'none';
     $('edgeR').style.display = off && (behind ? v.x <= 0 : v.x > 0) ? 'block' : 'none';
-    if (!opened) $('hint').textContent = (state.home ? 'Truhla '+(state.sel+1)+'/3 · ' : '') + (off ? (orient.ok ? 'Otoč se ve směru šipky.' : 'Táhni prstem ve směru šipky.') : 'Klepni na truhlu.');
+    if (!opened && permState !== 'denied') $('hint').textContent = (state.home ? 'Truhla '+(state.sel+1)+'/3 · ' : '') + (off ? (orient.ok ? 'Otoč se ve směru šipky.' : 'Táhni prstem ve směru šipky.') : 'Klepni na truhlu.');
     tickContent(s);
     renderer.render(scene, camera);
   }
@@ -345,6 +345,11 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
   function sensorUi(){
     var el = $('sensor'), btn = $('motionBtn'), waited = performance.now() - arOpenedAt;
     if (orient.ok){ el.textContent = orient.abs ? 'senzory ✓ kompas' : 'senzory ✓'; el.className = 'pill ok'; btn.style.display = 'none'; return; }
+    if (permState === 'denied'){
+      el.textContent = 'orientace zamítnuta · táhni prstem'; el.className = 'pill warn'; btn.style.display = 'none';
+      if (!opened) $('hint').textContent = 'Safari zamítlo pohyb a orientaci. Zavři Safari úplně (přejetím z přepínače aplikací), otevři stránku znovu a povol.';
+      return;
+    }
     el.textContent = waited > 2500 ? 'bez senzorů · táhni prstem' : 'senzory …'; el.className = 'pill warn';
     btn.style.display = (waited > 1500 && !motionAsked) ? 'block' : 'none';
   }
@@ -352,7 +357,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     motionAsked = true; $('motionBtn').style.display = 'none';
     var ask = (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function')
       ? DeviceOrientationEvent.requestPermission() : Promise.resolve('granted');
-    ask.then(function(r){ log('orientace (tlačítko): ' + r); $('sensor').textContent = r === 'granted' ? 'senzory: povoleno' : 'senzory: ' + r; listenOrientation(); })
+    ask.then(function(r){ permState = r; log('orientace (tlačítko): ' + r); listenOrientation(); })
        .catch(function(e){ log('orientace (tlačítko): ' + e); listenOrientation(); });
   };
   function openAR(){
@@ -585,13 +590,16 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
       .catch(function(){ $('go').disabled=false; $('go').textContent='Spustit test'; alert('Bez polohy test nejde. Povol ji v nastavení prohlížeče, nebo zkus demo.'); });
   };
   $('home').onclick = function(){
-    startOrientation();
+    $('home').disabled = true;
+    startOrientation().then(function(){ $('home').disabled = false; startHome(); });
+  };
+  function startHome(){
     state.home = true; state.sim = true; homeBase = null; state.found = 0; state.start = Date.now();
     state.targets = [1,2,3].map(function(n){ return {n:n, done:false}; }); state.sel = 0;
     openAR();
-  };
+  }
   $('demo').onclick = function(){
-    startOrientation();
+    startOrientation();   // camera is asked later, at the chest
     state.pos = {lat:50.0875, lon:14.4213}; state.acc = 5; spawn(); state.sim = true; show('s-nav'); update();
   };
   $('sim').onclick = function(){ state.sim = true; update(); };
