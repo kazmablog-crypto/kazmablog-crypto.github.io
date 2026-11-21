@@ -75,9 +75,9 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
 <section class="screen on pad" id="s-start">
   <div class="spacer"></div>
   <h1>Keška AR<br><span class="muted" style="font-size:1.1rem">technologický test</span></h1>
-  <p class="muted">Kolem tebe se rozmístí 3 virtuální truhly alchymisty Bartoloměje. Každá ukrývá něco jiného: <b>hlas</b>, <b>hologram</b> a <b>živý rozhovor</b>.</p>
+  <p class="muted">Kolem tebe se rozmístí 4 truhly a v každé na tebe čeká průvodce: <b>hlas</b>, <b>avatar</b>, <b>video</b> a <b>živý rozhovor</b>.</p>
   <ul class="list small">
-    <li><b>1</b><span>Poloha: použije se jen v tomhle telefonu, nikam se neposílá.</span></li>
+    <li><b>1</b><span>Poloha: použije se jen v tomhle telefonu, nikam se neposílá. Doporučuji sluchátka.</span></li>
     <li><b>2</b><span>Kompas: na iPhonu potvrď přístup k pohybu a orientaci.</span></li>
     <li><b>3</b><span>Kamera: zapne se až u cíle.</span></li>
   </ul>
@@ -128,8 +128,8 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
   <div class="edge l" id="edgeL">‹</div><div class="edge r" id="edgeR">›</div>
   <div class="hint" id="hint">Rozhlédni se. Truhla je někde kolem tebe.</div>
   <div class="talk" id="talk">
-    <div class="st" id="talkState">Bartoloměj čeká<small>Rozhovor potřebuje mikrofon</small></div>
-    <button class="btn blue" id="talkStart">🎙️ Promluvit si s Bartolomějem</button>
+    <div class="st" id="talkState">Průvodce čeká<small>Rozhovor potřebuje mikrofon</small></div>
+    <button class="btn blue" id="talkStart">🎙️ Promluvit si s průvodcem</button>
     <button class="btn ghost" id="talkEnd" style="background:rgba(0,0,0,.5)">Ukončit rozhovor</button>
   </div>
   <button class="cont" id="cont">Přeskočit ›</button>
@@ -175,8 +175,8 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
 
   function spawn(){
     var r=state.range, base=Math.random()*360;
-    state.targets = [0,1,2].map(function(i){
-      var d = r*(0.65 + Math.random()*0.7), b = (base + i*120 + (Math.random()*50-25))%360;
+    state.targets = [0,1,2,3].map(function(i){
+      var d = r*(0.65 + Math.random()*0.7), b = (base + i*90 + (Math.random()*40-20))%360;
       return Object.assign(offset(state.pos,b,d), {n:i+1, done:false});
     });
     state.sel = 0; renderTargets(); log('rozmístěno: '+state.targets.map(function(t){return Math.round(dist(state.pos,t))+' m';}).join(', '));
@@ -212,6 +212,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     if (e.type === 'deviceorientationabsolute') orient.abs = true;
     else if (orient.abs && !e.absolute) return;
     orient.alpha = e.alpha; orient.beta = e.beta; orient.gamma = e.gamma; orient.ok = true; orient.count++;
+    if (permState === 'denied') permState = 'granted';   // events arrive, so the sensors do work
   }
   var orient = {alpha:0,beta:90,gamma:0,ok:false,abs:false,count:0};
   var orientListening = false, permState = null;
@@ -307,8 +308,8 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     if (state.home){
       // living-room mode: the three chests sit around you, 120 degrees apart, 1.8-2.6 m away
       if (homeBase === null) homeBase = yaw;
-      yaw = homeBase + state.sel * 2.0944;
-      var rh = 1.8 + state.sel * 0.4;
+      yaw = homeBase + state.sel * Math.PI / 2;   // four chests around you, a quarter turn apart
+      var rh = 1.8 + state.sel * 0.3;
       chest.position.set(Math.sin(yaw)*rh, -1.2, -Math.cos(yaw)*rh);
       chest.rotation.y = -yaw + Math.PI;
       lid.rotation.x = 0; opened=false; opening=0; chest.userData.light.intensity=0;
@@ -337,7 +338,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     var off = behind || Math.abs(v.x) > 1;
     $('edgeL').style.display = off && (behind ? v.x > 0 : v.x < 0) ? 'block' : 'none';
     $('edgeR').style.display = off && (behind ? v.x <= 0 : v.x > 0) ? 'block' : 'none';
-    if (!opened && permState !== 'denied') $('hint').textContent = (state.home ? 'Truhla '+(state.sel+1)+'/3 · ' : '') + (off ? (orient.ok ? 'Otoč se ve směru šipky.' : 'Táhni prstem ve směru šipky.') : 'Klepni na truhlu.');
+    if (!opened && permState !== 'denied') $('hint').textContent = (state.home ? 'Truhla '+(state.sel+1)+'/'+state.targets.length+' · ' : '') + (off ? (orient.ok ? 'Otoč se ve směru šipky.' : 'Táhni prstem ve směru šipky.') : 'Klepni na truhlu.');
     tickContent(s);
     renderer.render(scene, camera);
   }
@@ -396,18 +397,20 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
       opened = true; $('hint').textContent = 'Otevírám…';
       if (navigator.vibrate) navigator.vibrate([40,40,80]);
       var n = state.targets[state.sel].n;
-      audioCtx(); if (n >= 2) { ensureHolo(); holoVid.play().catch(function(){}); }   // unlock media inside the tap
+      audioCtx();   // unlock media inside the tap
+      if (n === 2 || n === 4) { ensureHolo(); holoVid.play().then(function(){ holoVid.pause(); }).catch(function(){}); }
+      if (n === 3) { ensureScreen(); screenVid.play().then(function(){ screenVid.pause(); }).catch(function(){}); }
       setTimeout(function(){ startContent(n); }, 900);
     }
   });
 
   /* ---------- chest content: 1 = spatial voice, 2 = hologram, 3 = live conversation ---------- */
-  var AGENT_ID = 'agent_3201m7xrp7kdfkj9xn48jshdbeh0';
-  var MEDIA = {voice1:'media/hlas1.mp3', voice2:'media/hlas2.mp3', holo:'media/bartolomej.mp4'};
+  var AGENT_ID = 'agent_6301m7xvn7dgerj9qn1dyq8xtkq8';
+  var MEDIA = {voice1:'media/guide1.mp3', voice2:'media/guide2.mp3', holo:'media/guide2.mp4', video3:'media/video3.mp4', voice3:'media/video3.mp3'};
   var actx = null, raw = {}, voiceSrc = null, panner = null, analyser = null, levelBuf = null;
   var holo = null, holoVid = null, holoMat = null, holoRing = null, holoFade = 0, holoTarget = 0;
   var conv = null, contentKind = 0, contentDone = null;
-  [MEDIA.voice1, MEDIA.voice2].forEach(function(u){ raw[u] = fetch(u).then(function(r){ return r.arrayBuffer(); }).catch(function(){ return null; }); });
+  [MEDIA.voice1, MEDIA.voice2, MEDIA.voice3].forEach(function(u){ raw[u] = fetch(u).then(function(r){ return r.arrayBuffer(); }).catch(function(){ return null; }); });
 
   function audioCtx(){
     if (!actx){ var C = window.AudioContext || window.webkitAudioContext; if (!C) return null; actx = new C(); }
@@ -474,12 +477,12 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
   function ensureHolo(){
     if (holo) return;
     holoVid = document.createElement('video');
-    holoVid.src = MEDIA.holo; holoVid.loop = true; holoVid.muted = true; holoVid.playsInline = true;
+    holoVid.src = MEDIA.holo; holoVid.loop = false; holoVid.muted = true; holoVid.playsInline = true;
     holoVid.setAttribute('playsinline',''); holoVid.setAttribute('webkit-playsinline',''); holoVid.preload = 'auto';
     var tex = new THREE.VideoTexture(holoVid); tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
     holoMat = new THREE.ShaderMaterial({uniforms:{map:{value:tex}, opacity:{value:0}, time:{value:0}, glow:{value:0}},
       vertexShader:HOLO_VS, fragmentShader:HOLO_FS, transparent:true, depthWrite:false, side:THREE.DoubleSide});
-    holo = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 1.69), holoMat);
+    holo = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 1.12), holoMat);
     holoRing = new THREE.Mesh(new THREE.RingGeometry(0.18, 0.34, 40), new THREE.MeshBasicMaterial({color:0x6fb6ff, transparent:true, opacity:0, side:THREE.DoubleSide, depthWrite:false}));
     holoRing.rotation.x = -Math.PI/2;
     holo.visible = holoRing.visible = false; scene.add(holo); scene.add(holoRing);
@@ -488,28 +491,67 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     ensureHolo();
     // stand beside the chest, a little to the viewer's right, feet on the floor
     var p = chest.position, d = new THREE.Vector3(p.x, 0, p.z).normalize(), side = new THREE.Vector3(-d.z, 0, d.x);
-    holo.position.set(p.x + side.x*0.5 + d.x*0.45, -1.2 + 0.845, p.z + side.z*0.5 + d.z*0.45);
-    holoRing.position.set(holo.position.x, -1.19, holo.position.z);
+    holo.position.set(p.x + side.x*0.5 + d.x*0.45, -1.2 + 1.05, p.z + side.z*0.5 + d.z*0.45);
+    holoRing.position.set(holo.position.x, holo.position.y - 0.56, holo.position.z);
     holo.visible = holoRing.visible = true; holoTarget = 1;
+    try { holoVid.currentTime = 0; } catch(e){}
     holoVid.play().catch(function(e){ log('video: '+e); });
   }
   function hideHolo(){ holoTarget = 0; }
+
+
+  var vscreen = null, screenVid = null, screenFade = 0, screenTarget = 0;
+  function ensureScreen(){
+    if (vscreen) return;
+    screenVid = document.createElement('video');
+    screenVid.src = MEDIA.video3; screenVid.muted = true; screenVid.playsInline = true;
+    screenVid.setAttribute('playsinline',''); screenVid.setAttribute('webkit-playsinline',''); screenVid.preload = 'auto';
+    var tex = new THREE.VideoTexture(screenVid); tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
+    vscreen = new THREE.Group();
+    var frame = new THREE.Mesh(new THREE.PlaneGeometry(0.66, 1.12), new THREE.MeshBasicMaterial({color:0xf2b632, transparent:true, opacity:0}));
+    frame.position.z = -0.005;
+    var pic = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 1.066), new THREE.MeshBasicMaterial({map:tex, transparent:true, opacity:0}));
+    vscreen.add(frame); vscreen.add(pic); vscreen.userData = {frame:frame, pic:pic};
+    vscreen.visible = false; scene.add(vscreen);
+  }
+  function showScreen(){
+    ensureScreen();
+    var p = chest.position, d = new THREE.Vector3(p.x, 0, p.z).normalize();
+    // floats above the open chest, a bit behind it
+    vscreen.position.set(p.x + d.x*0.4, -1.2 + 1.4, p.z + d.z*0.4);
+    vscreen.visible = true; screenTarget = 1;
+    try { screenVid.currentTime = 0; } catch(e){}
+    screenVid.play().catch(function(e){ log('video3: '+e); });
+  }
+  function tickScreen(){
+    if (!vscreen || !vscreen.visible) return;
+    screenFade += (screenTarget - screenFade) * 0.08;
+    vscreen.userData.pic.material.opacity = screenFade;
+    vscreen.userData.frame.material.opacity = screenFade * 0.85;
+    vscreen.lookAt(0, vscreen.position.y, 0);
+    if (screenTarget === 0 && screenFade < 0.02) vscreen.visible = false;
+  }
 
   function finishContent(){ var f = contentDone; stopContent(); if (f) f(); }
   function startContent(n){
     contentKind = n; contentDone = found;
     $('cont').classList.add('on');
     if (n === 1){
-      $('hint').textContent = '🎧 Bartoloměj mluví z truhly… (nejlépe se sluchátky)';
+      $('hint').textContent = '🎧 Průvodce mluví z truhly… (nejlépe se sluchátky)';
       playSpatial(MEDIA.voice1, new THREE.Vector3(chest.position.x, chest.position.y + 0.3, chest.position.z), function(){ setTimeout(finishContent, 600); });
     } else if (n === 2){
-      $('hint').textContent = 'Bartoloměj se zjevil vedle truhly…';
+      $('hint').textContent = 'Průvodce se zjevil vedle truhly…';
       showHolo();
-      playSpatial(MEDIA.voice2, holo.position.clone().setY(holo.position.y + 0.55), function(){ hideHolo(); setTimeout(finishContent, 1200); });
+      playSpatial(MEDIA.voice2, holo.position.clone().setY(holo.position.y + 0.3), function(){ hideHolo(); setTimeout(finishContent, 1200); });
+    } else if (n === 3){
+      $('hint').textContent = '🎬 Video z ulic Prahy';
+      showScreen();
+      playSpatial(MEDIA.voice3, vscreen.position.clone(), function(){ screenTarget = 0; setTimeout(finishContent, 900); });
     } else {
-      $('hint').textContent = 'Bartoloměj je tu. Klepni a zeptej se ho na cokoli.';
-      showHolo(); holoVid.pause(); $('hint').style.display = 'none';
+      $('hint').style.display = 'none';
+      showHolo(); holoVid.loop = true; holoVid.pause();
       $('talk').classList.add('on'); $('talkStart').style.display = 'block'; $('talkEnd').style.display = 'none';
+      talkState('Průvodce čeká', 'Rozhovor potřebuje mikrofon');
       $('cont').classList.remove('on');
     }
   }
@@ -518,7 +560,8 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     facing.gain = facing.lp = facing.pos = null;
     analyser = null;
     if (conv){ var c = conv; conv = null; c.endSession().catch(function(){}); }
-    if (holo){ holo.visible = holoRing.visible = false; holoFade = 0; holoTarget = 0; holoMat.uniforms.opacity.value = 0; holoVid.pause(); }
+    if (holo){ holo.visible = holoRing.visible = false; holoFade = 0; holoTarget = 0; holoMat.uniforms.opacity.value = 0; holoVid.pause(); holoVid.loop = false; }
+    if (vscreen){ vscreen.visible = false; screenFade = 0; screenTarget = 0; screenVid.pause(); }
     $('talk').classList.remove('on'); $('cont').classList.remove('on'); $('hint').style.display = '';
     contentKind = 0;
   }
@@ -528,11 +571,11 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     $('talkStart').style.display = 'none'; talkState('Připojuji…', 'Povol mikrofon');
     window.ElevenLabsClient.Conversation.startSession({
       agentId: AGENT_ID, connectionType: 'websocket',
-      onConnect: function(){ talkState('Spojeno', 'Mluv normálně, Bartoloměj tě slyší'); $('talkEnd').style.display = 'block'; },
+      onConnect: function(){ talkState('Spojeno', 'Mluv normálně, průvodce tě slyší'); $('talkEnd').style.display = 'block'; },
       onDisconnect: function(){ if (contentKind === 3){ talkState('Rozhovor skončil'); setTimeout(finishContent, 900); } },
       onModeChange: function(m){
         var speaking = (m && m.mode) === 'speaking';
-        talkState(speaking ? '🗣️ Bartoloměj mluví' : '👂 Poslouchá tě', speaking ? '' : 'Řekni, co tě zajímá');
+        talkState(speaking ? '🗣️ Průvodce mluví' : '👂 Poslouchá tě', speaking ? '' : 'Řekni, co tě zajímá');
         if (holoVid){ if (speaking) holoVid.play().catch(function(){}); else holoVid.pause(); }
       },
       onError: function(e){ log('agent: ' + (e && e.message || e)); talkState('Chyba spojení', String(e && e.message || e).slice(0, 80)); $('talkEnd').style.display = 'block'; }
@@ -544,6 +587,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
 
   function tickContent(s){
     updateListener();
+    tickScreen();
     if (!holo || !holo.visible) return;
     holoFade += (holoTarget - holoFade) * 0.06;
     var lv = level();
@@ -560,23 +604,24 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
   function found(){
     var t = state.targets[state.sel]; t.done = true; state.found++;
     closeAR(); show('found');
-    var FT = {1:['Truhla 1: hlas z truhly','Bartolomějův hlas zněl ze směru truhly. Se sluchátky je to nejsilnější.'],
-              2:['Truhla 2: hologram','Bartoloměj stál vedle truhly a zadal ti první úkol.'],
-              3:['Truhla 3: rozhovor','Mluvil jsi s duchem místa. Odpovídal živě, podle sebe.']}[t.n] || ['Truhla '+t.n+' nalezena',''];
+    var FT = {1:['Truhla 1: hlas','Hlas průvodce zněl ze směru truhly.'],
+              2:['Truhla 2: avatar','Průvodce se ti ukázal a zadal první úkol.'],
+              3:['Truhla 3: video','Video z ulic Prahy přehrané v prostoru nad truhlou.'],
+              4:['Truhla 4: rozhovor','Mluvil jsi s digitálním dvojníkem průvodce.']}[t.n] || ['Truhla '+t.n+' nalezena',''];
     $('fTitle').textContent = FT[0]; $('fText').textContent = FT[1];
     var mins = Math.round((Date.now()-state.start)/60000);
-    $('fStats').textContent = 'Nalezeno ' + state.found + ' / 3 · ' + mins + ' min · ' + (state.home ? 'režim obývák' : 'přesnost GPS ±' + Math.round(state.acc||0) + ' m');
+    $('fStats').textContent = 'Nalezeno ' + state.found + ' / ' + state.targets.length + ' · ' + mins + ' min · ' + (state.home ? 'režim obývák' : 'přesnost GPS ±' + Math.round(state.acc||0) + ' m');
     $('qr').innerHTML = '';
     new QRCode($('qr'), {text: location.href.split('#')[0] + '#truhla-' + t.n, width:180, height:180, correctLevel: QRCode.CorrectLevel.M});
-    $('next').textContent = state.found >= 3 ? 'Hotovo, začít znovu' : 'Další truhla';
+    $('next').textContent = state.found >= state.targets.length ? 'Hotovo, začít znovu' : 'Další truhla';
   }
   $('next').onclick = function(){
     if (state.home){
-      if (state.found >= 3){ state.found=0; state.start=Date.now(); state.targets.forEach(function(t){ t.done=false; }); homeBase=null; }
+      if (state.found >= state.targets.length){ state.found=0; state.start=Date.now(); state.targets.forEach(function(t){ t.done=false; }); homeBase=null; }
       var k = state.targets.findIndex(function(t){ return !t.done; }); state.sel = k < 0 ? 0 : k;
       openAR(); return;
     }
-    if (state.found >= 3){ state.found=0; state.start=Date.now(); if(state.pos) spawn(); }
+    if (state.found >= state.targets.length){ state.found=0; state.start=Date.now(); if(state.pos) spawn(); }
     else { var i = state.targets.findIndex(function(t){ return !t.done; }); state.sel = i < 0 ? 0 : i; }
     state.sim = false; renderTargets(); show('s-nav'); update();
   };
@@ -595,7 +640,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
   };
   function startHome(){
     state.home = true; state.sim = true; homeBase = null; state.found = 0; state.start = Date.now();
-    state.targets = [1,2,3].map(function(n){ return {n:n, done:false}; }); state.sel = 0;
+    state.targets = [1,2,3,4].map(function(n){ return {n:n, done:false}; }); state.sel = 0;
     openAR();
   }
   $('demo').onclick = function(){
