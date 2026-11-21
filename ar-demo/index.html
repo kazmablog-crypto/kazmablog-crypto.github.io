@@ -123,7 +123,8 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
 <section class="screen" id="ar">
   <video id="cam" playsinline muted autoplay></video>
   <canvas id="gl"></canvas>
-  <div class="hud"><span class="pill ok" id="arInfo">AR</span><button class="x" id="arClose" aria-label="Zavřít">×</button></div>
+  <div class="hud"><span class="pill ok" id="arInfo">AR</span><span class="pill" id="sensor">senzory …</span><button class="x" id="arClose" aria-label="Zavřít">×</button></div>
+  <button class="btn" id="motionBtn" style="position:absolute;left:16px;right:16px;top:calc(70px + env(safe-area-inset-top));width:auto;display:none">Povolit otáčení (pohyb a orientace)</button>
   <div class="edge l" id="edgeL">‹</div><div class="edge r" id="edgeR">›</div>
   <div class="hint" id="hint">Rozhlédni se. Truhla je někde kolem tebe.</div>
   <div class="talk" id="talk">
@@ -207,9 +208,12 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     else if (e.absolute && e.alpha != null) h = (360 - e.alpha) % 360;                    // Android absolute
     if (h != null){ state.heading = h; state.headingSrc = 'compass'; }
     if (e.alpha == null) return;   // some browsers fire empty events without a sensor; keep the last good reading
-    orient.alpha = e.alpha; orient.beta = e.beta; orient.gamma = e.gamma; orient.ok = true;
+    // Android Chrome fires both a compass-based and a relative stream; mixing them makes the view jump between two directions
+    if (e.type === 'deviceorientationabsolute') orient.abs = true;
+    else if (orient.abs && !e.absolute) return;
+    orient.alpha = e.alpha; orient.beta = e.beta; orient.gamma = e.gamma; orient.ok = true; orient.count++;
   }
-  var orient = {alpha:0,beta:90,gamma:0,ok:false};
+  var orient = {alpha:0,beta:90,gamma:0,ok:false,abs:false,count:0};
   var orientListening = false;
   function listenOrientation(){
     if (orientListening) return; orientListening = true;
@@ -323,7 +327,8 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
   function resize(){ var w=innerWidth, h=innerHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
   function loop(t){
     raf = requestAnimationFrame(loop);
-    if (orient.ok) setCam(); else { camera.quaternion.identity(); }
+    if (orient.ok) setCam(); else { camera.quaternion.setFromEuler(new THREE.Euler(dragLook.pitch, dragLook.yaw, 0, 'YXZ')); }
+    sensorUi();
     var s = t/1000;
     if (!opened){ chest.position.y = -1.2 + Math.sin(s*2)*0.03; glow.material.opacity = .35 + Math.sin(s*3)*.2; glow.scale.setScalar(1+Math.sin(s*3)*.06); }
     else { opening = Math.min(1, opening + 0.025); lid.rotation.x = -opening*1.9; chest.userData.light.intensity = opening*2.2; }
@@ -332,11 +337,26 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     var off = behind || Math.abs(v.x) > 1;
     $('edgeL').style.display = off && (behind ? v.x > 0 : v.x < 0) ? 'block' : 'none';
     $('edgeR').style.display = off && (behind ? v.x <= 0 : v.x > 0) ? 'block' : 'none';
-    if (!opened) $('hint').textContent = (state.home ? 'Truhla '+(state.sel+1)+'/3 · ' : '') + (off ? 'Otoč se ve směru šipky.' : 'Klepni na truhlu.');
+    if (!opened) $('hint').textContent = (state.home ? 'Truhla '+(state.sel+1)+'/3 · ' : '') + (off ? (orient.ok ? 'Otoč se ve směru šipky.' : 'Táhni prstem ve směru šipky.') : 'Klepni na truhlu.');
     tickContent(s);
     renderer.render(scene, camera);
   }
+  var arOpenedAt = 0, motionAsked = false;
+  function sensorUi(){
+    var el = $('sensor'), btn = $('motionBtn'), waited = performance.now() - arOpenedAt;
+    if (orient.ok){ el.textContent = orient.abs ? 'senzory ✓ kompas' : 'senzory ✓'; el.className = 'pill ok'; btn.style.display = 'none'; return; }
+    el.textContent = waited > 2500 ? 'bez senzorů · táhni prstem' : 'senzory …'; el.className = 'pill warn';
+    btn.style.display = (waited > 1500 && !motionAsked) ? 'block' : 'none';
+  }
+  $('motionBtn').onclick = function(){
+    motionAsked = true; $('motionBtn').style.display = 'none';
+    var ask = (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function')
+      ? DeviceOrientationEvent.requestPermission() : Promise.resolve('granted');
+    ask.then(function(r){ log('orientace (tlačítko): ' + r); $('sensor').textContent = r === 'granted' ? 'senzory: povoleno' : 'senzory: ' + r; listenOrientation(); })
+       .catch(function(e){ log('orientace (tlačítko): ' + e); listenOrientation(); });
+  };
   function openAR(){
+    arOpenedAt = performance.now();
     show('ar'); state.arOn = true;
     if (!renderer) buildScene();
     resize(); window.addEventListener('resize', resize);
@@ -354,8 +374,17 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     show(state.home ? 's-start' : 's-nav');
   }
   var ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  var dragLook = {yaw:0, pitch:-0.45, down:null, moved:false};
+  $('gl').addEventListener('pointerdown', function(e){ dragLook.down = {x:e.clientX, y:e.clientY, yaw:dragLook.yaw, pitch:dragLook.pitch}; dragLook.moved = false; });
+  $('gl').addEventListener('pointermove', function(e){
+    var d = dragLook.down; if (!d) return;
+    var dx = e.clientX - d.x, dy = e.clientY - d.y;
+    if (Math.abs(dx) + Math.abs(dy) > 8) dragLook.moved = true;
+    if (!orient.ok && dragLook.moved){ dragLook.yaw = d.yaw + dx * 0.006; dragLook.pitch = Math.max(-1.3, Math.min(0.5, d.pitch + dy * 0.004)); }
+  });
+  window.addEventListener('pointerup', function(){ dragLook.down = null; });
   $('gl').addEventListener('click', function(e){
-    if (opened) return;
+    if (opened || dragLook.moved) return;
     ndc.set(e.clientX/innerWidth*2-1, -(e.clientY/innerHeight)*2+1);
     ray.setFromCamera(ndc, camera);
     if (ray.intersectObject(chest, true).length){
@@ -392,7 +421,9 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
       panner = ctx.createPanner(); panner.panningModel = 'HRTF'; panner.distanceModel = 'inverse'; panner.refDistance = 1; panner.rolloffFactor = 0.5;
       setPos(panner, pos);
       analyser = ctx.createAnalyser(); analyser.fftSize = 512; levelBuf = new Uint8Array(analyser.fftSize);
-      voiceSrc.connect(panner); panner.connect(analyser); analyser.connect(ctx.destination);
+      facing.gain = ctx.createGain(); facing.lp = ctx.createBiquadFilter(); facing.lp.type = 'lowpass'; facing.lp.frequency.value = 18000;
+      facing.pos = pos.clone();
+      voiceSrc.connect(panner); panner.connect(facing.lp); facing.lp.connect(facing.gain); facing.gain.connect(analyser); analyser.connect(ctx.destination);
       voiceSrc.onended = function(){ voiceSrc = null; if (contentKind) onEnd(); };
       voiceSrc.start();
     }).catch(function(e){ log('zvuk: '+e); onEnd(); });
@@ -404,11 +435,20 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     for (var i=0;i<levelBuf.length;i++){ var v=(levelBuf[i]-128)/128; sum+=v*v; }
     return Math.min(1, Math.sqrt(sum/levelBuf.length)*4);
   }
+  var facing = {gain:null, lp:null, pos:null};
+  function updateFacing(f){
+    if (!facing.gain || !facing.pos || !voiceSrc) return;
+    var dir = facing.pos.clone().normalize(), c = f.dot(dir), k = Math.pow((c + 1) / 2, 1.6);   // 1 = looking at the source, 0 = facing away
+    var t = actx.currentTime;
+    facing.gain.gain.setTargetAtTime(0.35 + 0.65 * k, t, 0.08);
+    facing.lp.frequency.setTargetAtTime(700 + 17000 * k * k, t, 0.08);
+  }
   function updateListener(){
     if (!actx || !camera) return;
     var f = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion), u = new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion), L = actx.listener;
     if (L.forwardX){ L.forwardX.value=f.x; L.forwardY.value=f.y; L.forwardZ.value=f.z; L.upX.value=u.x; L.upY.value=u.y; L.upZ.value=u.z; }
     else L.setOrientation(f.x,f.y,f.z,u.x,u.y,u.z);
+    updateFacing(f);
   }
 
   var HOLO_FS = [
@@ -470,6 +510,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
   }
   function stopContent(){
     if (voiceSrc){ try { voiceSrc.onended = null; voiceSrc.stop(); } catch(e){} voiceSrc = null; }
+    facing.gain = facing.lp = facing.pos = null;
     analyser = null;
     if (conv){ var c = conv; conv = null; c.endSession().catch(function(){}); }
     if (holo){ holo.visible = holoRing.visible = false; holoFade = 0; holoTarget = 0; holoMat.uniforms.opacity.value = 0; holoVid.pause(); }
