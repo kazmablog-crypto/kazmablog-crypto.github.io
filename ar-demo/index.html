@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="robots" content="noindex">
+<title>Keška AR – test</title>
+<style>
+:root{--bg:#0b0b0c;--panel:#141416;--line:#2a2a2e;--text:#f2f2f2;--muted:#a3a3aa;--red:#e4232d;--green:#2fd27a;--gold:#f2b632}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);
+  font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden;-webkit-user-select:none;user-select:none}
+button{font:inherit;cursor:pointer}
+.screen{position:fixed;inset:0;display:none;flex-direction:column}
+.screen.on{display:flex}
+.pad{padding:calc(16px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom))}
+h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-weight:800;font-size:1.05rem;background:var(--red);color:#fff}
+.btn.ghost{background:transparent;border:1.5px solid var(--line);color:#ddd;font-weight:600}
+.row{display:flex;gap:8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+.list{list-style:none;margin:12px 0;padding:0;display:grid;gap:6px}
+.list li{display:flex;gap:10px;align-items:flex-start}
+.list li b{color:var(--gold)}
+.seg{display:flex;gap:6px;margin:8px 0 14px}
+.seg button{flex:1;background:var(--panel);border:1px solid var(--line);color:#ddd;border-radius:10px;padding:10px 0}
+.seg button.sel{border-color:var(--red);background:rgba(228,35,45,.12);color:#fff}
+/* nav */
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:5px 10px;font-size:.78rem;color:var(--muted)}
+.pill.ok{color:var(--green)}
+.pill.warn{color:var(--gold)}
+#radar{width:auto;height:min(36vh,100vw - 32px);aspect-ratio:1;display:block;margin:8px auto}
+.arrowWrap{display:grid;place-items:center;margin:4px 0}
+#arrow{width:84px;height:84px;transition:transform .15s linear}
+.dist{font-size:2.2rem;font-weight:800;text-align:center;line-height:1}
+.targets{display:flex;gap:6px;margin:10px 0}
+.targets button{flex:1;background:var(--panel);border:1px solid var(--line);color:#ddd;border-radius:10px;padding:8px 4px;font-size:.85rem}
+.targets button.sel{border-color:var(--gold);color:#fff}
+.targets button.done{opacity:.45;text-decoration:line-through}
+.banner{border-radius:12px;padding:12px 14px;font-weight:700;text-align:center;margin:8px 0}
+.banner.go{background:rgba(47,210,122,.14);color:var(--green)}
+.banner.slow{background:rgba(242,182,50,.14);color:var(--gold)}
+.spacer{flex:1}
+/* ar */
+#ar{background:#000}
+#cam{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#gl{position:absolute;inset:0;width:100%;height:100%}
+.hud{position:absolute;left:0;right:0;top:0;padding:calc(12px + env(safe-area-inset-top)) 14px 0;display:flex;justify-content:space-between;align-items:center}
+.hud .x{background:rgba(0,0,0,.55);border:0;color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.3rem}
+.hint{position:absolute;left:16px;right:16px;bottom:calc(24px + env(safe-area-inset-bottom));text-align:center;
+  background:rgba(0,0,0,.6);border-radius:12px;padding:12px;font-weight:600}
+.edge{position:absolute;top:50%;width:44px;height:44px;margin-top:-22px;display:none;color:var(--gold);font-size:2.2rem;font-weight:900;text-shadow:0 0 10px #000}
+.edge.l{left:8px}.edge.r{right:8px}
+/* found */
+#found{background:rgba(8,8,9,.94);align-items:center;justify-content:center;text-align:center}
+#qr{background:#fff;padding:12px;border-radius:12px;margin:16px auto;width:max-content}
+#qr img,#qr canvas{display:block}
+.big{font-size:3rem;margin:0}
+.log{font:12px/1.4 ui-monospace,Menlo,monospace;color:#888;white-space:pre-wrap;max-height:22vh;overflow:auto;margin-top:8px}
+</style>
+</head>
+<body>
+
+<!-- START -->
+<section class="screen on pad" id="s-start">
+  <div class="spacer"></div>
+  <h1>Keška AR<br><span class="muted" style="font-size:1.1rem">technologický test</span></h1>
+  <p class="muted">Kolem tebe se rozmístí 3 virtuální truhly. Dojdi k nim podle šipky a v kameře je otevři.</p>
+  <ul class="list small">
+    <li><b>1</b><span>Poloha: použije se jen v tomhle telefonu, nikam se neposílá.</span></li>
+    <li><b>2</b><span>Kompas: na iPhonu potvrď přístup k pohybu a orientaci.</span></li>
+    <li><b>3</b><span>Kamera: zapne se až u cíle.</span></li>
+  </ul>
+  <div class="small muted">Vzdálenost truhel</div>
+  <div class="seg" id="range">
+    <button data-r="30">blízko<br><small>20–40 m</small></button>
+    <button data-r="100" class="sel">střed<br><small>60–140 m</small></button>
+    <button data-r="200">daleko<br><small>150–250 m</small></button>
+  </div>
+  <button class="btn" id="go">Spustit test</button>
+  <div style="height:8px"></div>
+  <button class="btn ghost" id="demo">Demo bez chození (simulace)</button>
+  <p class="small muted" style="margin-top:12px">Hraj jen na chodníku a v parku, dívej se kolem sebe. Při rychlosti nad 10 km/h se navigace pozastaví.</p>
+</section>
+
+<!-- NAV -->
+<section class="screen pad" id="s-nav">
+  <div class="top">
+    <b>Keška AR</b>
+    <span class="pill" id="acc">GPS …</span>
+    <span class="pill" id="cmp">kompas …</span>
+  </div>
+  <canvas id="radar" width="600" height="600"></canvas>
+  <div class="targets" id="targets"></div>
+  <div class="arrowWrap"><svg id="arrow" viewBox="0 0 100 100"><path d="M50 6 L82 88 L50 70 L18 88 Z" fill="#f2b632" stroke="#000" stroke-width="3" stroke-linejoin="round"/></svg></div>
+  <div class="dist" id="dist">– m</div>
+  <div id="state"></div>
+  <div class="spacer"></div>
+  <div class="row">
+    <button class="btn" id="openAR" disabled>Otevřít kameru</button>
+  </div>
+  <div style="height:8px"></div>
+  <div class="row">
+    <button class="btn ghost" id="sim">Simulovat příchod</button>
+    <button class="btn ghost" id="reset">Nové truhly</button>
+  </div>
+  <div class="log" id="log"></div>
+</section>
+
+<!-- AR -->
+<section class="screen" id="ar">
+  <video id="cam" playsinline muted autoplay></video>
+  <canvas id="gl"></canvas>
+  <div class="hud"><span class="pill ok" id="arInfo">AR</span><button class="x" id="arClose" aria-label="Zavřít">×</button></div>
+  <div class="edge l" id="edgeL">‹</div><div class="edge r" id="edgeR">›</div>
+  <div class="hint" id="hint">Rozhlédni se. Truhla je někde kolem tebe.</div>
+</section>
+
+<!-- FOUND -->
+<section class="screen pad" id="found">
+  <p class="big">✓</p>
+  <h1 id="fTitle">Truhla nalezena</h1>
+  <p class="muted" id="fText">Naskenuj kód druhým telefonem nebo pokračuj na další.</p>
+  <div id="qr"></div>
+  <p class="small muted" id="fStats"></p>
+  <button class="btn" id="next">Pokračovat</button>
+</section>
+
+<script src="lib/three.min.js"></script>
+<script src="lib/qrcode.min.js"></script>
+<script>
+(function(){
+  'use strict';
+  var $ = function(id){ return document.getElementById(id); };
+  var R = 6371000, toRad = Math.PI/180;
+  var state = { range:100, pos:null, acc:null, speed:null, heading:null, headingSrc:null,
+                targets:[], sel:0, sim:false, found:0, start:Date.now(), arOn:false };
+  var ARRIVE_M = 20, MAX_SPEED = 2.8; // ~10 km/h
+
+  function log(m){ var l=$('log'); l.textContent = (new Date().toLocaleTimeString()+'  '+m+'\n'+l.textContent).slice(0,1500); }
+  function show(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on', s.id===id); }); }
+
+  /* ---------- geo maths ---------- */
+  function dist(a,b){ var dLa=(b.lat-a.lat)*toRad, dLo=(b.lon-a.lon)*toRad;
+    var h=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(a.lat*toRad)*Math.cos(b.lat*toRad)*Math.sin(dLo/2)*Math.sin(dLo/2);
+    return 2*R*Math.asin(Math.sqrt(h)); }
+  function bearing(a,b){ var y=Math.sin((b.lon-a.lon)*toRad)*Math.cos(b.lat*toRad);
+    var x=Math.cos(a.lat*toRad)*Math.sin(b.lat*toRad)-Math.sin(a.lat*toRad)*Math.cos(b.lat*toRad)*Math.cos((b.lon-a.lon)*toRad);
+    return (Math.atan2(y,x)/toRad+360)%360; }
+  function offset(p,brg,d){ var la=p.lat*toRad, lo=p.lon*toRad, b=brg*toRad, ad=d/R;
+    var la2=Math.asin(Math.sin(la)*Math.cos(ad)+Math.cos(la)*Math.sin(ad)*Math.cos(b));
+    var lo2=lo+Math.atan2(Math.sin(b)*Math.sin(ad)*Math.cos(la),Math.cos(ad)-Math.sin(la)*Math.sin(la2));
+    return {lat:la2/toRad, lon:lo2/toRad}; }
+
+  function spawn(){
+    var r=state.range, base=Math.random()*360;
+    state.targets = [0,1,2].map(function(i){
+      var d = r*(0.65 + Math.random()*0.7), b = (base + i*120 + (Math.random()*50-25))%360;
+      return Object.assign(offset(state.pos,b,d), {n:i+1, done:false});
+    });
+    state.sel = 0; renderTargets(); log('rozmístěno: '+state.targets.map(function(t){return Math.round(dist(state.pos,t))+' m';}).join(', '));
+  }
+  function renderTargets(){
+    $('targets').innerHTML = state.targets.map(function(t,i){
+      return '<button class="'+(i===state.sel?'sel ':'')+(t.done?'done':'')+'" data-i="'+i+'">Truhla '+t.n+'</button>'; }).join('');
+    $('targets').querySelectorAll('button').forEach(function(b){ b.onclick=function(){ state.sel=+b.dataset.i; renderTargets(); update(); }; });
+  }
+
+  /* ---------- sensors ---------- */
+  function startGeo(){
+    if (!navigator.geolocation){ log('geolokace nedostupná'); return Promise.reject(); }
+    return new Promise(function(res,rej){
+      var first = true;
+      navigator.geolocation.watchPosition(function(p){
+        state.pos = {lat:p.coords.latitude, lon:p.coords.longitude};
+        state.acc = p.coords.accuracy; state.speed = p.coords.speed;
+        if (state.headingSrc !== 'compass' && p.coords.heading != null && !isNaN(p.coords.heading) && (p.coords.speed||0) > 0.8){
+          state.heading = p.coords.heading; state.headingSrc = 'gps'; }
+        if (first){ first=false; res(); }
+        update();
+      }, function(e){ log('GPS chyba: '+e.message); if(first) rej(e); }, {enableHighAccuracy:true, maximumAge:1000, timeout:20000});
+    });
+  }
+  function onOrient(e){
+    var h = null;
+    if (typeof e.webkitCompassHeading === 'number') h = e.webkitCompassHeading;          // iOS
+    else if (e.absolute && e.alpha != null) h = (360 - e.alpha) % 360;                    // Android absolute
+    if (h != null){ state.heading = h; state.headingSrc = 'compass'; }
+    orient.alpha = e.alpha; orient.beta = e.beta; orient.gamma = e.gamma; orient.ok = e.alpha != null;
+  }
+  var orient = {alpha:0,beta:90,gamma:0,ok:false};
+  function startOrientation(){
+    var ask = (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function')
+      ? DeviceOrientationEvent.requestPermission() : Promise.resolve('granted');
+    return ask.then(function(r){
+      if (r !== 'granted'){ log('orientace zamítnuta'); return; }
+      window.addEventListener('deviceorientationabsolute', onOrient, true);
+      window.addEventListener('deviceorientation', onOrient, true);
+    }).catch(function(e){ log('orientace: '+e); });
+  }
+
+  /* ---------- nav UI ---------- */
+  var rc = $('radar').getContext('2d');
+  function drawRadar(){
+    var W=600, c=W/2, rmax=c-18, h=state.heading||0;
+    rc.clearRect(0,0,W,W);
+    var g=rc.createRadialGradient(c,c,10,c,c,c); g.addColorStop(0,'#1b1b1f'); g.addColorStop(1,'#0e0e10');
+    rc.fillStyle=g; rc.beginPath(); rc.arc(c,c,rmax,0,7); rc.fill();
+    rc.strokeStyle='#2a2a2e'; rc.lineWidth=2;
+    [1,2,3].forEach(function(k){ rc.beginPath(); rc.arc(c,c,rmax*k/3,0,7); rc.stroke(); });
+    var scale = rmax / (state.range*1.6);
+    rc.save(); rc.translate(c,c); rc.rotate(-h*toRad);
+    rc.fillStyle='#666'; rc.font='bold 24px system-ui'; rc.textAlign='center'; rc.fillText('S', 0, -rmax+28);
+    if (state.pos) state.targets.forEach(function(t,i){
+      var d=Math.min(dist(state.pos,t), state.range*1.6), b=bearing(state.pos,t)*toRad;
+      var x=Math.sin(b)*d*scale, y=-Math.cos(b)*d*scale;
+      rc.fillStyle = t.done ? '#444' : (i===state.sel ? '#f2b632' : '#8a6d2a');
+      rc.beginPath(); rc.arc(x,y, i===state.sel?16:12, 0, 7); rc.fill();
+      rc.fillStyle='#000'; rc.font='bold 16px system-ui'; rc.fillText(t.n, x, y+6);
+    });
+    rc.restore();
+    rc.fillStyle='#2d7cf6'; rc.beginPath(); rc.moveTo(c,c-18); rc.lineTo(c+12,c+12); rc.lineTo(c,c+5); rc.lineTo(c-12,c+12); rc.fill();
+    rc.fillStyle='#555'; rc.font='18px system-ui'; rc.textAlign='left'; rc.fillText(Math.round(state.range*1.6)+' m', 16, W-16);
+  }
+  function update(){
+    if (!state.pos || !state.targets.length) return;
+    var t = state.targets[state.sel], d = dist(state.pos,t), b = bearing(state.pos,t);
+    $('acc').textContent = 'GPS ±' + Math.round(state.acc||0) + ' m';
+    $('acc').className = 'pill ' + ((state.acc||99) <= 15 ? 'ok' : 'warn');
+    $('cmp').textContent = state.headingSrc ? (state.headingSrc==='compass' ? 'kompas ✓' : 'směr z GPS') : 'kompas –';
+    $('cmp').className = 'pill ' + (state.headingSrc==='compass' ? 'ok' : 'warn');
+    $('dist').textContent = t.done ? 'nalezeno' : (d >= 1000 ? (d/1000).toFixed(2)+' km' : Math.round(d)+' m');
+    $('arrow').style.transform = 'rotate(' + (b - (state.heading||0)) + 'deg)';
+    var fast = (state.speed||0) > MAX_SPEED;
+    var here = !t.done && (state.sim || d <= Math.max(ARRIVE_M, Math.min(35, (state.acc||0))));
+    $('state').innerHTML = fast ? '<div class="banner slow">Zpomal. Při rychlosti nad 10 km/h je test pozastavený.</div>'
+                         : here ? '<div class="banner go">Jsi u truhly. Otevři kameru.</div>' : '';
+    $('openAR').disabled = !(here && !fast);
+    drawRadar();
+  }
+  setInterval(function(){ if ($('s-nav').classList.contains('on')) update(); }, 250);
+
+  /* ---------- AR ---------- */
+  var renderer, scene, camera, chest, lid, glow, raf, stream, opened=false, opening=0, spawnYaw=0;
+  function buildScene(){
+    renderer = new THREE.WebGLRenderer({canvas:$('gl'), alpha:true, antialias:true});
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio||1));
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(62, 1, 0.05, 200);
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x333344, 0.9));
+    var dl = new THREE.DirectionalLight(0xffffff, 0.8); dl.position.set(2,5,3); scene.add(dl);
+    chest = new THREE.Group();
+    var wood = new THREE.MeshStandardMaterial({color:0x6b3f1d, roughness:.8});
+    var band = new THREE.MeshStandardMaterial({color:0xf2b632, metalness:.7, roughness:.35});
+    var body = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.36,0.4), wood); body.position.y=0.18; chest.add(body);
+    [-0.22,0.22].forEach(function(x){ var b=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.37,0.41), band); b.position.set(x,0.18,0); chest.add(b); });
+    lid = new THREE.Group(); lid.position.set(0,0.36,-0.2);
+    var lidM = new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.2,0.6,20,1,false,0,Math.PI), wood);
+    lidM.rotation.z = Math.PI/2; lidM.position.z = 0.2; lid.add(lidM);
+    var lock = new THREE.Mesh(new THREE.BoxGeometry(0.08,0.1,0.03), band); lock.position.set(0,0.0,0.41); lid.add(lock);
+    chest.add(lid);
+    glow = new THREE.Mesh(new THREE.RingGeometry(0.42,0.55,40), new THREE.MeshBasicMaterial({color:0xf2b632, transparent:true, opacity:.55, side:THREE.DoubleSide}));
+    glow.rotation.x = -Math.PI/2; glow.position.y = 0.01; chest.add(glow);
+    var light = new THREE.PointLight(0xffd27a, 0, 2); light.position.set(0,0.4,0); chest.add(light); chest.userData.light = light;
+    scene.add(chest);
+  }
+  // DeviceOrientation -> camera quaternion (W3C convention)
+  var zee = new THREE.Vector3(0,0,1), euler = new THREE.Euler(), q0 = new THREE.Quaternion(), q1 = new THREE.Quaternion(-Math.sqrt(.5),0,0,Math.sqrt(.5));
+  function screenAngle(){ return ((screen.orientation && screen.orientation.angle) || window.orientation || 0) * toRad; }
+  function setCam(){
+    euler.set(orient.beta*toRad, orient.alpha*toRad, -orient.gamma*toRad, 'YXZ');
+    camera.quaternion.setFromEuler(euler); camera.quaternion.multiply(q1); camera.quaternion.multiply(q0.setFromAxisAngle(zee, -screenAngle()));
+  }
+  function camYaw(){ var f=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion); return Math.atan2(f.x,-f.z); }
+  function placeChest(){
+    setCam();
+    var yaw = camYaw();
+    // if GPS says the chest is still a few metres away, nudge it in that direction; otherwise put it in front of you
+    if (state.pos && !state.sim && state.heading != null){
+      var t=state.targets[state.sel], d=dist(state.pos,t);
+      if (d > 6) yaw += (bearing(state.pos,t) - state.heading) * toRad;
+    }
+    spawnYaw = yaw; var r = 2.2;
+    chest.position.set(Math.sin(yaw)*r, -1.2, -Math.cos(yaw)*r);
+    chest.rotation.y = -yaw + Math.PI;
+    chest.scale.setScalar(1); lid.rotation.x = 0; opened=false; opening=0; chest.userData.light.intensity=0;
+  }
+  function resize(){ var w=innerWidth, h=innerHeight; renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix(); }
+  function loop(t){
+    raf = requestAnimationFrame(loop);
+    if (orient.ok) setCam(); else { camera.quaternion.identity(); }
+    var s = t/1000;
+    if (!opened){ chest.position.y = -1.2 + Math.sin(s*2)*0.03; glow.material.opacity = .35 + Math.sin(s*3)*.2; glow.scale.setScalar(1+Math.sin(s*3)*.06); }
+    else { opening = Math.min(1, opening + 0.025); lid.rotation.x = -opening*1.9; chest.userData.light.intensity = opening*2.2; }
+    // off-screen helper arrows
+    var v = chest.position.clone().project(camera), behind = v.z > 1;
+    var off = behind || Math.abs(v.x) > 1;
+    $('edgeL').style.display = off && (behind ? v.x > 0 : v.x < 0) ? 'block' : 'none';
+    $('edgeR').style.display = off && (behind ? v.x <= 0 : v.x > 0) ? 'block' : 'none';
+    if (!opened) $('hint').textContent = off ? 'Otoč se ve směru šipky.' : 'Klepni na truhlu.';
+    renderer.render(scene, camera);
+  }
+  function openAR(){
+    show('ar'); state.arOn = true;
+    if (!renderer) buildScene();
+    resize(); window.addEventListener('resize', resize);
+    var camP = (navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
+      ? navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}, audio:false}) : Promise.reject('no camera API');
+    camP.then(function(s){ stream=s; $('cam').srcObject=s; $('arInfo').textContent='AR · kamera'; })
+        .catch(function(e){ log('kamera: '+e); $('arInfo').textContent='AR bez kamery'; $('ar').style.background='linear-gradient(#22242a,#0b0b0c)'; });
+    setTimeout(placeChest, 300);
+    cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
+  }
+  function closeAR(){
+    state.arOn=false; cancelAnimationFrame(raf);
+    if (stream){ stream.getTracks().forEach(function(t){ t.stop(); }); stream=null; }
+    show('s-nav');
+  }
+  var ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  $('gl').addEventListener('click', function(e){
+    if (opened) return;
+    ndc.set(e.clientX/innerWidth*2-1, -(e.clientY/innerHeight)*2+1);
+    ray.setFromCamera(ndc, camera);
+    if (ray.intersectObject(chest, true).length){
+      opened = true; $('hint').textContent = 'Otevírám…';
+      if (navigator.vibrate) navigator.vibrate([40,40,80]);
+      setTimeout(found, 1500);
+    }
+  });
+  function found(){
+    var t = state.targets[state.sel]; t.done = true; state.found++;
+    closeAR(); show('found');
+    $('fTitle').textContent = 'Truhla ' + t.n + ' nalezena';
+    var mins = Math.round((Date.now()-state.start)/60000);
+    $('fStats').textContent = 'Nalezeno ' + state.found + ' / 3 · ' + mins + ' min · přesnost GPS ±' + Math.round(state.acc||0) + ' m';
+    $('qr').innerHTML = '';
+    new QRCode($('qr'), {text: location.href.split('#')[0] + '#truhla-' + t.n, width:180, height:180, correctLevel: QRCode.CorrectLevel.M});
+    $('next').textContent = state.found >= 3 ? 'Hotovo, začít znovu' : 'Další truhla';
+  }
+  $('next').onclick = function(){
+    if (state.found >= 3){ state.found=0; state.start=Date.now(); if(state.pos) spawn(); }
+    else { var i = state.targets.findIndex(function(t){ return !t.done; }); state.sel = i < 0 ? 0 : i; }
+    state.sim = false; renderTargets(); show('s-nav'); update();
+  };
+
+  /* ---------- start ---------- */
+  $('range').querySelectorAll('button').forEach(function(b){ b.onclick=function(){
+    $('range').querySelectorAll('button').forEach(function(x){ x.classList.remove('sel'); }); b.classList.add('sel'); state.range=+b.dataset.r; }; });
+  $('go').onclick = function(){
+    $('go').disabled = true; $('go').textContent = 'Zjišťuji polohu…';
+    startOrientation().then(startGeo).then(function(){ spawn(); show('s-nav'); update(); })
+      .catch(function(){ $('go').disabled=false; $('go').textContent='Spustit test'; alert('Bez polohy test nejde. Povol ji v nastavení prohlížeče, nebo zkus demo.'); });
+  };
+  $('demo').onclick = function(){
+    startOrientation();
+    state.pos = {lat:50.0875, lon:14.4213}; state.acc = 5; spawn(); state.sim = true; show('s-nav'); update();
+  };
+  $('sim').onclick = function(){ state.sim = true; update(); };
+  $('reset').onclick = function(){ if (state.pos){ state.found=0; state.targets.forEach(function(t){t.done=false;}); spawn(); update(); } };
+  $('openAR').onclick = openAR;
+  $('arClose').onclick = closeAR;
+})();
+</script>
+</body>
+</html>
