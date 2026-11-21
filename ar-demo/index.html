@@ -60,6 +60,13 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
 #qr img,#qr canvas{display:block}
 .big{font-size:3rem;margin:0}
 .log{font:12px/1.4 ui-monospace,Menlo,monospace;color:#888;white-space:pre-wrap;max-height:22vh;overflow:auto;margin-top:8px}
+.talk{position:absolute;left:16px;right:16px;bottom:calc(24px + env(safe-area-inset-bottom));display:none;flex-direction:column;gap:8px;align-items:stretch}
+.talk.on{display:flex}
+.talk .st{background:rgba(0,0,0,.65);border-radius:12px;padding:10px 12px;text-align:center;font-weight:700}
+.talk .st small{display:block;font-weight:500;color:#bbb;margin-top:2px}
+.cont{position:absolute;right:16px;top:calc(64px + env(safe-area-inset-top));display:none;background:rgba(0,0,0,.6);color:#fff;border:1px solid #444;border-radius:20px;padding:7px 14px;font-size:.85rem}
+.cont.on{display:block}
+.btn.blue{background:#2d7cf6}
 </style>
 </head>
 <body>
@@ -68,7 +75,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
 <section class="screen on pad" id="s-start">
   <div class="spacer"></div>
   <h1>Keška AR<br><span class="muted" style="font-size:1.1rem">technologický test</span></h1>
-  <p class="muted">Kolem tebe se rozmístí 3 virtuální truhly. Dojdi k nim podle šipky a v kameře je otevři.</p>
+  <p class="muted">Kolem tebe se rozmístí 3 virtuální truhly alchymisty Bartoloměje. Každá ukrývá něco jiného: <b>hlas</b>, <b>hologram</b> a <b>živý rozhovor</b>.</p>
   <ul class="list small">
     <li><b>1</b><span>Poloha: použije se jen v tomhle telefonu, nikam se neposílá.</span></li>
     <li><b>2</b><span>Kompas: na iPhonu potvrď přístup k pohybu a orientaci.</span></li>
@@ -119,6 +126,12 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
   <div class="hud"><span class="pill ok" id="arInfo">AR</span><button class="x" id="arClose" aria-label="Zavřít">×</button></div>
   <div class="edge l" id="edgeL">‹</div><div class="edge r" id="edgeR">›</div>
   <div class="hint" id="hint">Rozhlédni se. Truhla je někde kolem tebe.</div>
+  <div class="talk" id="talk">
+    <div class="st" id="talkState">Bartoloměj čeká<small>Rozhovor potřebuje mikrofon</small></div>
+    <button class="btn blue" id="talkStart">🎙️ Promluvit si s Bartolomějem</button>
+    <button class="btn ghost" id="talkEnd" style="background:rgba(0,0,0,.5)">Ukončit rozhovor</button>
+  </div>
+  <button class="cont" id="cont">Přeskočit ›</button>
 </section>
 
 <!-- FOUND -->
@@ -133,6 +146,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
 
 <script src="lib/three.min.js"></script>
 <script src="lib/qrcode.min.js"></script>
+<script src="lib/elevenlabs-client.min.js"></script>
 <script>
 (function(){
   'use strict';
@@ -192,17 +206,22 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     if (typeof e.webkitCompassHeading === 'number') h = e.webkitCompassHeading;          // iOS
     else if (e.absolute && e.alpha != null) h = (360 - e.alpha) % 360;                    // Android absolute
     if (h != null){ state.heading = h; state.headingSrc = 'compass'; }
-    orient.alpha = e.alpha; orient.beta = e.beta; orient.gamma = e.gamma; orient.ok = e.alpha != null;
+    if (e.alpha == null) return;   // some browsers fire empty events without a sensor; keep the last good reading
+    orient.alpha = e.alpha; orient.beta = e.beta; orient.gamma = e.gamma; orient.ok = true;
   }
   var orient = {alpha:0,beta:90,gamma:0,ok:false};
+  var orientListening = false;
+  function listenOrientation(){
+    if (orientListening) return; orientListening = true;
+    window.addEventListener('deviceorientationabsolute', onOrient, true);
+    window.addEventListener('deviceorientation', onOrient, true);
+  }
   function startOrientation(){
+    // listen in every case: where permission is refused no events arrive, where it is granted (or not needed) they do
     var ask = (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function')
       ? DeviceOrientationEvent.requestPermission() : Promise.resolve('granted');
-    return ask.then(function(r){
-      if (r !== 'granted'){ log('orientace zamítnuta'); return; }
-      window.addEventListener('deviceorientationabsolute', onOrient, true);
-      window.addEventListener('deviceorientation', onOrient, true);
-    }).catch(function(e){ log('orientace: '+e); });
+    return ask.then(function(r){ if (r !== 'granted') log('orientace: ' + r); listenOrientation(); })
+              .catch(function(e){ log('orientace: '+e); listenOrientation(); });
   }
 
   /* ---------- nav UI ---------- */
@@ -314,6 +333,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     $('edgeL').style.display = off && (behind ? v.x > 0 : v.x < 0) ? 'block' : 'none';
     $('edgeR').style.display = off && (behind ? v.x <= 0 : v.x > 0) ? 'block' : 'none';
     if (!opened) $('hint').textContent = (state.home ? 'Truhla '+(state.sel+1)+'/3 · ' : '') + (off ? 'Otoč se ve směru šipky.' : 'Klepni na truhlu.');
+    tickContent(s);
     renderer.render(scene, camera);
   }
   function openAR(){
@@ -328,6 +348,7 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
   }
   function closeAR(){
+    stopContent();
     state.arOn=false; cancelAnimationFrame(raf);
     if (stream){ stream.getTracks().forEach(function(t){ t.stop(); }); stream=null; }
     show(state.home ? 's-start' : 's-nav');
@@ -340,13 +361,163 @@ h1{font-size:1.9rem;line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
     if (ray.intersectObject(chest, true).length){
       opened = true; $('hint').textContent = 'Otevírám…';
       if (navigator.vibrate) navigator.vibrate([40,40,80]);
-      setTimeout(found, 1500);
+      var n = state.targets[state.sel].n;
+      audioCtx(); if (n >= 2) { ensureHolo(); holoVid.play().catch(function(){}); }   // unlock media inside the tap
+      setTimeout(function(){ startContent(n); }, 900);
     }
   });
+
+  /* ---------- chest content: 1 = spatial voice, 2 = hologram, 3 = live conversation ---------- */
+  var AGENT_ID = 'agent_3201m7xrp7kdfkj9xn48jshdbeh0';
+  var MEDIA = {voice1:'media/hlas1.mp3', voice2:'media/hlas2.mp3', holo:'media/bartolomej.mp4'};
+  var actx = null, raw = {}, voiceSrc = null, panner = null, analyser = null, levelBuf = null;
+  var holo = null, holoVid = null, holoMat = null, holoRing = null, holoFade = 0, holoTarget = 0;
+  var conv = null, contentKind = 0, contentDone = null;
+  [MEDIA.voice1, MEDIA.voice2].forEach(function(u){ raw[u] = fetch(u).then(function(r){ return r.arrayBuffer(); }).catch(function(){ return null; }); });
+
+  function audioCtx(){
+    if (!actx){ var C = window.AudioContext || window.webkitAudioContext; if (!C) return null; actx = new C(); }
+    if (actx.state === 'suspended') actx.resume();
+    return actx;
+  }
+  function setPos(node, v){ if (node.positionX){ node.positionX.value=v.x; node.positionY.value=v.y; node.positionZ.value=v.z; } else node.setPosition(v.x,v.y,v.z); }
+  function playSpatial(url, pos, onEnd){
+    var ctx = audioCtx(); if (!ctx){ onEnd(); return; }
+    raw[url].then(function(b){
+      if (!b) throw new Error('audio');
+      return new Promise(function(res,rej){ ctx.decodeAudioData(b.slice(0), res, rej); });
+    }).then(function(buf){
+      if (!contentKind) return;
+      voiceSrc = ctx.createBufferSource(); voiceSrc.buffer = buf;
+      panner = ctx.createPanner(); panner.panningModel = 'HRTF'; panner.distanceModel = 'inverse'; panner.refDistance = 1; panner.rolloffFactor = 0.5;
+      setPos(panner, pos);
+      analyser = ctx.createAnalyser(); analyser.fftSize = 512; levelBuf = new Uint8Array(analyser.fftSize);
+      voiceSrc.connect(panner); panner.connect(analyser); analyser.connect(ctx.destination);
+      voiceSrc.onended = function(){ voiceSrc = null; if (contentKind) onEnd(); };
+      voiceSrc.start();
+    }).catch(function(e){ log('zvuk: '+e); onEnd(); });
+  }
+  function level(){
+    if (conv && conv.getOutputVolume) return Math.min(1, conv.getOutputVolume()*2.5);
+    if (!analyser) return 0;
+    analyser.getByteTimeDomainData(levelBuf); var sum=0;
+    for (var i=0;i<levelBuf.length;i++){ var v=(levelBuf[i]-128)/128; sum+=v*v; }
+    return Math.min(1, Math.sqrt(sum/levelBuf.length)*4);
+  }
+  function updateListener(){
+    if (!actx || !camera) return;
+    var f = new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion), u = new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion), L = actx.listener;
+    if (L.forwardX){ L.forwardX.value=f.x; L.forwardY.value=f.y; L.forwardZ.value=f.z; L.upX.value=u.x; L.upY.value=u.y; L.upZ.value=u.z; }
+    else L.setOrientation(f.x,f.y,f.z,u.x,u.y,u.z);
+  }
+
+  var HOLO_FS = [
+    'uniform sampler2D map; uniform float opacity; uniform float time; uniform float glow; varying vec2 vUv;',
+    'void main(){',
+    '  vec4 c = texture2D(map, vUv);',
+    '  float g = c.g - max(c.r, c.b);',
+    '  float a = 1.0 - smoothstep(0.08, 0.22, g);',              // chroma key
+    '  vec3 col = c.rgb; col.g = min(col.g, max(col.r, col.b) * 1.08);', // despill
+    '  float lum = dot(col, vec3(0.299, 0.587, 0.114));',
+    '  col = mix(col, vec3(0.55, 0.8, 1.0) * lum * 1.4, 0.22 + glow * 0.2);',
+    '  float scan = 0.88 + 0.12 * sin(vUv.y * 520.0 + time * 10.0);',
+    '  float edge = smoothstep(0.0, 0.04, vUv.x) * smoothstep(1.0, 0.96, vUv.x) * smoothstep(0.0, 0.02, vUv.y) * smoothstep(1.0, 0.98, vUv.y);',
+    '  float flick = 0.93 + 0.07 * sin(time * 37.0) * sin(time * 13.0);',
+    '  gl_FragColor = vec4(col * scan + vec3(0.2, 0.5, 1.0) * glow * 0.25, a * opacity * edge * flick);',
+    '}'].join('\n');
+  var HOLO_VS = 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
+  function ensureHolo(){
+    if (holo) return;
+    holoVid = document.createElement('video');
+    holoVid.src = MEDIA.holo; holoVid.loop = true; holoVid.muted = true; holoVid.playsInline = true;
+    holoVid.setAttribute('playsinline',''); holoVid.setAttribute('webkit-playsinline',''); holoVid.preload = 'auto';
+    var tex = new THREE.VideoTexture(holoVid); tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter;
+    holoMat = new THREE.ShaderMaterial({uniforms:{map:{value:tex}, opacity:{value:0}, time:{value:0}, glow:{value:0}},
+      vertexShader:HOLO_VS, fragmentShader:HOLO_FS, transparent:true, depthWrite:false, side:THREE.DoubleSide});
+    holo = new THREE.Mesh(new THREE.PlaneGeometry(0.95, 1.69), holoMat);
+    holoRing = new THREE.Mesh(new THREE.RingGeometry(0.18, 0.34, 40), new THREE.MeshBasicMaterial({color:0x6fb6ff, transparent:true, opacity:0, side:THREE.DoubleSide, depthWrite:false}));
+    holoRing.rotation.x = -Math.PI/2;
+    holo.visible = holoRing.visible = false; scene.add(holo); scene.add(holoRing);
+  }
+  function showHolo(){
+    ensureHolo();
+    // stand beside the chest, a little to the viewer's right, feet on the floor
+    var p = chest.position, d = new THREE.Vector3(p.x, 0, p.z).normalize(), side = new THREE.Vector3(-d.z, 0, d.x);
+    holo.position.set(p.x + side.x*0.5 + d.x*0.45, -1.2 + 0.845, p.z + side.z*0.5 + d.z*0.45);
+    holoRing.position.set(holo.position.x, -1.19, holo.position.z);
+    holo.visible = holoRing.visible = true; holoTarget = 1;
+    holoVid.play().catch(function(e){ log('video: '+e); });
+  }
+  function hideHolo(){ holoTarget = 0; }
+
+  function finishContent(){ var f = contentDone; stopContent(); if (f) f(); }
+  function startContent(n){
+    contentKind = n; contentDone = found;
+    $('cont').classList.add('on');
+    if (n === 1){
+      $('hint').textContent = '🎧 Bartoloměj mluví z truhly… (nejlépe se sluchátky)';
+      playSpatial(MEDIA.voice1, new THREE.Vector3(chest.position.x, chest.position.y + 0.3, chest.position.z), function(){ setTimeout(finishContent, 600); });
+    } else if (n === 2){
+      $('hint').textContent = 'Bartoloměj se zjevil vedle truhly…';
+      showHolo();
+      playSpatial(MEDIA.voice2, holo.position.clone().setY(holo.position.y + 0.55), function(){ hideHolo(); setTimeout(finishContent, 1200); });
+    } else {
+      $('hint').textContent = 'Bartoloměj je tu. Klepni a zeptej se ho na cokoli.';
+      showHolo(); holoVid.pause(); $('hint').style.display = 'none';
+      $('talk').classList.add('on'); $('talkStart').style.display = 'block'; $('talkEnd').style.display = 'none';
+      $('cont').classList.remove('on');
+    }
+  }
+  function stopContent(){
+    if (voiceSrc){ try { voiceSrc.onended = null; voiceSrc.stop(); } catch(e){} voiceSrc = null; }
+    analyser = null;
+    if (conv){ var c = conv; conv = null; c.endSession().catch(function(){}); }
+    if (holo){ holo.visible = holoRing.visible = false; holoFade = 0; holoTarget = 0; holoMat.uniforms.opacity.value = 0; holoVid.pause(); }
+    $('talk').classList.remove('on'); $('cont').classList.remove('on'); $('hint').style.display = '';
+    contentKind = 0;
+  }
+  function talkState(t, sub){ $('talkState').innerHTML = t + (sub ? '<small>' + sub + '</small>' : ''); }
+  $('talkStart').onclick = function(){
+    if (!window.ElevenLabsClient){ talkState('Rozhovor není k dispozici', 'Knihovna se nenačetla'); return; }
+    $('talkStart').style.display = 'none'; talkState('Připojuji…', 'Povol mikrofon');
+    window.ElevenLabsClient.Conversation.startSession({
+      agentId: AGENT_ID, connectionType: 'websocket',
+      onConnect: function(){ talkState('Spojeno', 'Mluv normálně, Bartoloměj tě slyší'); $('talkEnd').style.display = 'block'; },
+      onDisconnect: function(){ if (contentKind === 3){ talkState('Rozhovor skončil'); setTimeout(finishContent, 900); } },
+      onModeChange: function(m){
+        var speaking = (m && m.mode) === 'speaking';
+        talkState(speaking ? '🗣️ Bartoloměj mluví' : '👂 Poslouchá tě', speaking ? '' : 'Řekni, co tě zajímá');
+        if (holoVid){ if (speaking) holoVid.play().catch(function(){}); else holoVid.pause(); }
+      },
+      onError: function(e){ log('agent: ' + (e && e.message || e)); talkState('Chyba spojení', String(e && e.message || e).slice(0, 80)); $('talkEnd').style.display = 'block'; }
+    }).then(function(c){ conv = c; if (contentKind !== 3){ c.endSession(); conv = null; } })
+      .catch(function(e){ log('agent: ' + e); talkState('Rozhovor se nespustil', String(e && e.message || e).slice(0, 80)); $('talkEnd').style.display = 'block'; });
+  };
+  $('talkEnd').onclick = finishContent;
+  $('cont').onclick = function(){ hideHolo(); finishContent(); };
+
+  function tickContent(s){
+    updateListener();
+    if (!holo || !holo.visible) return;
+    holoFade += (holoTarget - holoFade) * 0.06;
+    var lv = level();
+    holoMat.uniforms.opacity.value = holoFade;
+    holoMat.uniforms.time.value = s;
+    holoMat.uniforms.glow.value = lv;
+    holoRing.material.opacity = holoFade * (0.45 + lv * 0.4);
+    holoRing.scale.setScalar(1 + lv * 0.25 + Math.sin(s*3) * 0.04);
+    holo.lookAt(0, holo.position.y, 0);
+    if (holoTarget === 0 && holoFade < 0.02){ holo.visible = holoRing.visible = false; }
+  }
+
+  if (/[?&]debug/.test(location.search)) window.__ar = {get chest(){return chest;}, get camera(){return camera;}, get holo(){return holo;}, state:state, project:function(o){ var v=o.position.clone().project(camera); return {x:(v.x+1)/2*innerWidth, y:(1-v.y)/2*innerHeight, z:v.z}; }};
   function found(){
     var t = state.targets[state.sel]; t.done = true; state.found++;
     closeAR(); show('found');
-    $('fTitle').textContent = 'Truhla ' + t.n + ' nalezena';
+    var FT = {1:['Truhla 1: hlas z truhly','Bartolomějův hlas zněl ze směru truhly. Se sluchátky je to nejsilnější.'],
+              2:['Truhla 2: hologram','Bartoloměj stál vedle truhly a zadal ti první úkol.'],
+              3:['Truhla 3: rozhovor','Mluvil jsi s duchem místa. Odpovídal živě, podle sebe.']}[t.n] || ['Truhla '+t.n+' nalezena',''];
+    $('fTitle').textContent = FT[0]; $('fText').textContent = FT[1];
     var mins = Math.round((Date.now()-state.start)/60000);
     $('fStats').textContent = 'Nalezeno ' + state.found + ' / 3 · ' + mins + ' min · ' + (state.home ? 'režim obývák' : 'přesnost GPS ±' + Math.round(state.acc||0) + ' m');
     $('qr').innerHTML = '';
