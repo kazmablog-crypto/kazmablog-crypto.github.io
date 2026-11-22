@@ -96,12 +96,20 @@ button{background:var(--red);color:#fff;border:0;border-radius:10px;padding:0 18
   }
   tick(); setInterval(tick, 1000);
 
-  // no invitation codes exist yet: every code is refused
+  // one test code opens the order site (the version that still ends with the campaign reveal); every other code is refused
+  var TEST_CODE = '12345';
+  var SHOP = /claude\.(ai|site)|claudeusercontent/.test(location.host) ? 'https://claude.ai/artifact/UGnPYTLyTv91kSScesF5xA' : '../';
   $('f').addEventListener('submit', function(e){
     e.preventDefault();
-    var f = $('f'), err = $('err');
-    if (!$('code').value.trim()) return;
+    var f = $('f'), err = $('err'), v = $('code').value.trim();
+    if (!v) return;
     err.classList.remove('on'); f.classList.remove('shake'); void f.offsetWidth;
+    if (v === TEST_CODE){
+      err.textContent = 'KÓD PŘIJAT'; err.style.color = '#2fd27a'; err.classList.add('on');
+      setTimeout(function(){ try { window.top.location.href = SHOP; } catch(_) { location.href = SHOP; } }, 900);
+      return;
+    }
+    err.textContent = 'NEPLATNÝ KÓD'; err.style.color = '';
     setTimeout(function(){ f.classList.add('shake'); err.classList.add('on'); $('code').value = ''; }, 600);
   });
 })();
