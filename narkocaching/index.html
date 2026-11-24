@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Narkocaching – preventivní kampaň</title>
+<meta name="description" content="Preventivní protidrogová kampaň. Tohle není e-shop.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0b0c; --panel:#141416; --line:#2a2a2e; --text:#f2f2f2; --muted:#a3a3aa;
+  --red:#e4232d; --red-glow:rgba(228,35,45,.55); --green:#2fd27a; --paper:#efefea;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:16px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(60rem 40rem at 85% 5%,rgba(255,255,255,.06),transparent 60%),
+    radial-gradient(30rem 30rem at 0% 70%,rgba(228,35,45,.08),transparent 70%);}
+button{font:inherit;cursor:pointer}
+.wrap{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:0 16px}
+.display{font-family:Anton,Impact,"Arial Narrow",sans-serif;font-weight:400;letter-spacing:.01em;text-transform:uppercase}
+
+/* header */
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+.logo{width:54px;height:54px;flex:none}
+.brand-name{font-size:clamp(1.6rem,6.5vw,2.8rem);line-height:1}
+.brand-name span{color:var(--red)}
+.brand-sub{font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:#ddd;margin-top:4px}
+.brand-sub b{color:var(--red);font-weight:600}
+.burger{background:none;border:0;padding:8px;display:grid;gap:6px}
+.burger i{display:block;width:34px;height:4px;background:#fff;border-radius:2px}
+
+/* hero */
+.hero{position:relative;display:grid;grid-template-columns:1.1fr 1fr;align-items:center;min-height:420px}
+.hero h1{font-size:clamp(2.6rem,11vw,4.6rem);line-height:.98;margin:10px 0 0;transform:rotate(-2deg);
+  text-shadow:0 2px 0 #000}
+.underline{display:block;height:6px;width:70%;background:var(--red);margin:14px 0 18px;transform:rotate(-2deg);
+  border-radius:3px 40px 3px 40px}
+.hero p{font-size:1.15rem;color:#e7e7e7;max-width:22rem;margin:0 0 24px}
+.cta{display:inline-flex;align-items:center;gap:12px;background:var(--red);color:#fff;border:0;border-radius:10px;
+  padding:16px 26px;font-size:1.35rem;box-shadow:0 0 28px var(--red-glow)}
+.cta:hover{filter:brightness(1.1)}
+.figure{position:relative;height:100%;min-height:380px}
+.figure img{position:absolute;right:-40px;top:-40px;width:115%;max-width:560px;height:auto;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 35%),linear-gradient(to bottom,transparent,#000 22%,#000 75%,transparent);
+  -webkit-mask-composite:source-in;
+          mask-image:linear-gradient(to right,transparent,#000 35%),linear-gradient(to bottom,transparent,#000 22%,#000 75%,transparent);
+          mask-composite:intersect}
+
+/* features */
+.features{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:14px;
+  background:rgba(20,20,22,.85);margin:26px 0}
+.feat{display:flex;gap:12px;align-items:center;padding:18px 16px}
+.feat+.feat{border-left:1px solid var(--line)}
+.feat svg{width:40px;height:40px;flex:none}
+.feat h3{margin:0;font-size:1.05rem}
+.feat p{margin:2px 0 0;color:var(--muted);font-size:.9rem;line-height:1.3}
+
+/* map + stats */
+.live{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;align-items:center}
+.map{width:100%;height:auto;display:block}
+.pin{cursor:pointer}
+.pin:hover circle{filter:brightness(1.3)}
+.stats{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:18px}
+.stats h4{margin:0 0 12px;color:var(--green);font-size:1.15rem;display:flex;align-items:center;gap:10px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);
+  animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.stat{display:flex;gap:14px;align-items:center;padding:8px 0;font-size:.98rem}
+.stat svg{width:28px;height:28px;flex:none}
+.stats .bar{height:3px;background:var(--red);width:70%;margin-top:10px;border-radius:2px}
+
+/* products */
+.offer h2{font-size:clamp(2rem,8vw,3rem);margin:34px 0 14px}
+.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.card{grid-column:span 2;position:relative;border:1px solid var(--line);border-radius:14px;
+  background:linear-gradient(180deg,#18181b,#101012);padding:16px;display:grid;
+  grid-template-columns:auto 1fr;grid-template-rows:auto auto;gap:6px 12px;text-align:left;color:inherit}
+.card:nth-child(4){grid-column:2 / span 2}
+.card .img{width:100px;height:75px;grid-row:1;object-fit:contain;mix-blend-mode:lighten}
+.card h3{margin:4px 0 0;font-size:1.5rem;line-height:1}
+.card small{display:block;color:#ccc;font-family:Inter,sans-serif;text-transform:none;font-size:.85rem}
+.card .qty{grid-column:1;color:#ddd}
+.card .row{grid-column:1 / -1;display:flex;justify-content:space-between;align-items:center}
+.price{color:var(--red);font-size:1.6rem}
+.cart{border:2px solid var(--red);background:transparent;border-radius:8px;width:62px;height:40px;
+  display:grid;place-items:center}
+.cart svg{width:22px;height:22px}
+.card:hover{border-color:#3d3d44}
+
+/* banner */
+.banner{display:block;width:100%;margin:36px 0 20px;border:0;background:none;padding:0;color:#111;text-align:left}
+.banner .paper{display:block;position:relative;background:var(--paper);padding:26px 70px 22px 40px;transform:rotate(-2deg);
+  clip-path:polygon(2% 8%,40% 0,72% 6%,100% 0,98% 60%,100% 100%,60% 94%,30% 100%,0 92%,3% 50%)}
+.banner .tag{position:absolute;left:24px;top:-6px;background:var(--red);color:#fff;font-family:"Permanent Marker",cursive;
+  padding:2px 12px;transform:rotate(-6deg);font-size:1.3rem}
+.banner .txt{display:block;font-family:Anton,sans-serif;font-size:clamp(1.4rem,5.5vw,2.2rem);display:block;margin-top:10px}
+.banner .arrow{position:absolute;right:26px;top:50%;transform:translateY(-50%);font-size:2rem}
+
+footer{color:#7b7b82;font-size:.8rem;padding:30px 0 40px;text-align:center}
+footer button{background:none;border:0;color:#9a9aa2;text-decoration:underline;padding:0}
+
+/* ===== REVEAL ===== */
+.reveal{position:fixed;inset:0;z-index:50;background:#f4f1ea;color:#121212;overflow-y:auto;
+  opacity:0;visibility:hidden;transition:opacity .35s ease}
+.reveal.on{opacity:1;visibility:visible}
+body.locked{overflow:hidden}
+.glitch{position:fixed;inset:0;z-index:49;background:var(--red);pointer-events:none;opacity:0}
+.glitch.flash{animation:flash .45s steps(3)}
+@keyframes flash{0%{opacity:.9}50%{opacity:.2}100%{opacity:0}}
+.rv{max-width:720px;margin:0 auto;padding:40px 18px 60px}
+.rv .stamp{display:inline-block;font-family:Anton,sans-serif;font-size:.95rem;letter-spacing:.2em;color:var(--red);
+  border:2px solid var(--red);padding:4px 10px;transform:rotate(-3deg)}
+.rv h2{font-family:Anton,sans-serif;text-transform:uppercase;font-size:clamp(2.4rem,10vw,4.2rem);line-height:1;margin:18px 0 10px}
+.rv h2 s{color:#8a8a8a;text-decoration-color:var(--red);text-decoration-thickness:6px}
+.rv .lead{font-size:1.2rem;margin:0 0 26px}
+.box{background:#fff;border-radius:14px;padding:20px 20px;margin:0 0 16px;border:1px solid #e1ddd3}
+.box h3{margin:0 0 6px;font-size:1.15rem}
+.box p{margin:0;color:#333}
+.box.hit{border:2px solid var(--red)}
+.box.hit .kicker{color:var(--red);font-weight:800;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase}
+.facts{display:grid;gap:12px;grid-template-columns:1fr 1fr;margin-bottom:16px}
+.facts .box{margin:0}
+.big{font-family:Anton,sans-serif;font-size:2rem;line-height:1;color:var(--red);display:block;margin-bottom:6px}
+.help{background:#121212;color:#fff;border-radius:14px;padding:22px 20px;margin:24px 0 16px}
+.help h3{margin:0 0 12px;font-family:Anton,sans-serif;text-transform:uppercase;font-size:1.6rem}
+.help ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.help a{color:#fff;font-weight:600}
+.help li span{color:#aaa;font-size:.9rem;display:block}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.btn{border:0;border-radius:10px;padding:14px 20px;font-weight:800}
+.btn.red{background:var(--red);color:#fff}
+.btn.ghost{background:transparent;border:2px solid #121212;color:#121212}
+.small{font-size:.8rem;color:#666;margin-top:24px}
+
+@media (max-width:720px){
+  /* Mobile = the mockup, drawn on a 470px canvas and scaled to the screen width (see --z in script). */
+  .wrap{width:470px;max-width:none;padding:0 16px;zoom:var(--z,1)}
+  .facts{grid-template-columns:1fr}
+
+  header{padding:14px 0 4px;position:relative;z-index:2}
+  .brand{gap:8px}
+  .logo{width:52px;height:52px}
+  .brand-name{font-size:34px}
+  .brand-sub{font-size:7.6px;letter-spacing:.26em;margin-top:5px}
+  .burger{gap:5px;padding:4px}
+  .burger i{width:30px;height:3.5px}
+
+  .hero{display:block;min-height:0;padding-bottom:4px}
+  .figure{position:absolute;top:-78px;right:-34px;width:405px;height:405px;min-height:0;z-index:-1}
+  .figure img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;
+    -webkit-mask-image:linear-gradient(to right,transparent 0,#000 30%),linear-gradient(to bottom,#000 70%,transparent);
+            mask-image:linear-gradient(to right,transparent 0,#000 30%),linear-gradient(to bottom,#000 70%,transparent)}
+  .hero h1{font-size:40px;line-height:1.02;margin:10px 0 0 12px;transform:rotate(-3deg);transform-origin:left}
+  .underline{width:150px;height:4px;margin:8px 0 12px 16px;transform:rotate(-3deg)}
+  .hero p{font-size:13px;line-height:1.38;max-width:146px;margin:0 0 14px 20px;color:#e4e4e4}
+  .cta{font-size:16px;padding:9px 16px;gap:10px;border-radius:7px;margin-left:16px;box-shadow:0 0 18px var(--red-glow)}
+
+  .features{margin:12px 16px 10px;border-radius:9px}
+  .feat{flex-direction:row;align-items:center;gap:8px;padding:10px 8px}
+  .feat svg{width:26px;height:26px}
+  .feat h3{font-size:12.5px}
+  .feat p{font-size:10px;line-height:1.25}
+
+  .live{grid-template-columns:1.6fr 1fr;gap:6px;margin:0 0 0 0}
+  .stats{padding:10px 9px;border-radius:9px}
+  .stats h4{font-size:12px;margin-bottom:6px;gap:6px}
+  .dot{width:7px;height:7px}
+  .stat{gap:8px;padding:5px 0;font-size:10.5px;line-height:1.25}
+  .stat svg{width:16px;height:16px}
+  .stats .bar{height:2px;margin-top:6px}
+
+  .offer h2{font-size:27px;margin:10px 0 6px 16px}
+  .grid{grid-template-columns:repeat(6,1fr);gap:6px 6px;margin:0 8px}
+  .card,.card:nth-child(5){grid-column:span 2;padding:7px 8px 8px;border-radius:7px;
+    grid-template-columns:62px 1fr;gap:3px 6px}
+  .card:nth-child(4){grid-column:2 / span 2}
+  .card .img{width:62px;height:47px}
+  .card h3{font-size:15.5px;margin-top:6px}
+  .card .qty{font-size:11px}
+  .price{font-size:16px}
+  .cart{width:34px;height:23px;border-radius:5px;border-width:1.5px}
+  .cart svg{width:13px;height:13px}
+
+  .banner{margin:14px 0 8px}
+  .banner .paper{padding:16px 46px 12px 30px;margin:0 30px}
+  .banner .tag{font-size:13px;left:22px;top:-2px;padding:1px 8px}
+  .banner .txt{font-size:19px;margin-top:6px}
+  .banner .arrow{font-size:20px;right:18px}
+  footer{font-size:10px;padding:16px 0 30px}
+}
+
+/* ===== ORDER FLOW ===== */
+.toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);background:#fff;color:#111;font-weight:600;
+  padding:10px 16px;border-radius:10px;z-index:40;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.cartbar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.85) 30%)}
+.cartbar button{display:flex;width:100%;max-width:560px;margin:0 auto;justify-content:space-between;align-items:center;
+  background:var(--red);color:#fff;border:0;border-radius:12px;padding:15px 18px;font-weight:800;box-shadow:0 0 24px var(--red-glow)}
+.cartbar .n{background:#fff;color:var(--red);border-radius:20px;padding:1px 9px;margin-right:8px;font-size:.85rem}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:35;opacity:0;visibility:hidden;transition:.25s}
+.sheet-bg.on{opacity:1;visibility:visible}
+.sheet{visibility:hidden;position:fixed;left:0;right:0;bottom:0;z-index:36;max-width:560px;margin:0 auto;max-height:92vh;overflow-y:auto;
+  background:#141416;border:1px solid var(--line);border-bottom:0;border-radius:20px 20px 0 0;
+  padding:22px 18px calc(22px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .3s ease}
+.sheet.on{transform:none;visibility:visible}
+.sheet .x{position:absolute;right:12px;top:10px;background:none;border:0;color:#aaa;font-size:1.8rem;line-height:1}
+.steps{display:flex;gap:6px;margin:0 36px 16px 0}
+.steps i{flex:1;height:4px;border-radius:2px;background:#2c2c31}
+.steps i.on{background:var(--red)}
+.sheet h3{margin:0 0 4px;font-size:1.8rem}
+.sheet .muted{color:var(--muted);font-size:.9rem;margin:0 0 14px}
+.prod-head{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+.prod-head .img{width:110px;height:82px;flex:none;background:#000;border-radius:12px;object-fit:contain}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 16px}
+.opt{background:#0d0d0f;border:2px solid var(--line);color:#fff;border-radius:10px;padding:12px 6px;text-align:center}
+.opt b{display:block;font-size:1.1rem}
+.opt small{color:var(--muted)}
+.opt.sel{border-color:var(--red);background:rgba(228,35,45,.08)}
+.list{display:grid;gap:8px;margin:0 0 16px}
+.list .opt{display:flex;justify-content:space-between;align-items:center;text-align:left;padding:14px}
+.list .opt small{display:block}
+.eta{color:var(--green);font-size:.85rem;white-space:nowrap}
+.sumrow{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:.95rem}
+.sumrow.total{border:0;font-weight:800;font-size:1.15rem;padding-top:12px}
+.sumrow.total span:last-child{color:var(--red)}
+.pay{display:flex;align-items:center;gap:12px;background:#0d0d0f;border:2px solid var(--red);border-radius:12px;padding:14px;margin:14px 0}
+.pay .btc{width:36px;height:36px;border-radius:50%;background:#f7931a;display:grid;place-items:center;font-weight:800;color:#fff;flex:none}
+.pay small{display:block;color:var(--muted)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.9rem;color:#ddd;margin:6px 0 16px}
+.check input{width:20px;height:20px;accent-color:var(--red);flex:none;margin-top:1px}
+.go{width:100%;background:var(--red);color:#fff;border:0;border-radius:12px;padding:16px;font-weight:800;font-size:1.1rem;
+  box-shadow:0 0 22px var(--red-glow)}
+.go:disabled{opacity:.4;box-shadow:none;cursor:not-allowed}
+.secure{display:flex;justify-content:center;gap:6px;color:var(--muted);font-size:.8rem;margin-top:10px}
+.spin{display:grid;place-items:center;text-align:center;padding:40px 0}
+.spin i{width:46px;height:46px;border:4px solid #333;border-top-color:var(--red);border-radius:50%;animation:rot .8s linear infinite;margin-bottom:16px}
+@keyframes rot{to{transform:rotate(360deg)}}
+.drawer a{display:block;color:#fff;text-decoration:none;font-size:1.4rem;padding:12px 0;border-bottom:1px solid var(--line)}
+
+/* ===== HOW ===== */
+.how{margin:26px 0 10px}
+.how h2{font-size:clamp(1.8rem,7vw,2.6rem);margin:0 0 12px}
+.how ol{list-style:none;counter-reset:s;margin:0 0 18px;padding:0;display:grid;gap:8px}
+.how li{counter-increment:s;display:grid;grid-template-columns:38px 1fr;gap:2px 12px;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}
+.how li::before{content:counter(s);grid-row:span 2;width:34px;height:34px;border-radius:50%;background:var(--red);
+  display:grid;place-items:center;font-family:Anton,sans-serif;font-size:1.1rem}
+.how li b{font-size:1rem}
+.how li span{color:var(--muted);font-size:.88rem;line-height:1.35}
+.map{cursor:pointer}
+
+/* ===== MAP APP ===== */
+.mapapp{position:fixed;inset:0;z-index:33;background:#0b0b0c;display:flex;flex-direction:column;
+  transform:translateY(100%);visibility:hidden;transition:transform .3s ease,visibility .3s}
+.mapapp.on{transform:none;visibility:visible}
+.ma-top{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.ma-top b{font-size:1.3rem;flex:1}
+.ma-back{background:none;border:0;color:#fff;font-size:1.5rem;padding:0 4px}
+.ma-live{color:var(--green);font-size:.8rem;display:flex;align-items:center;gap:6px}
+.ma-live .dot{width:8px;height:8px}
+.ma-where{display:flex;align-items:center;gap:10px;padding:10px 14px 4px;font-size:.9rem;color:#ddd}
+.ma-where select{flex:1;background:#141416;color:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;scrollbar-width:none}
+.chips button{flex:none;background:#141416;border:1px solid var(--line);color:#ddd;border-radius:20px;padding:6px 12px;font-size:.85rem}
+.chips button.sel{background:var(--red);border-color:var(--red);color:#fff}
+.ma-map{flex:1;min-height:0;position:relative;touch-action:none;overflow:hidden;cursor:grab}
+.ma-map svg{position:absolute;inset:0;width:100%;height:100%}
+.ma-lbl{font-family:Anton,sans-serif;font-size:11px;fill:#5d5d66;letter-spacing:1px;text-anchor:middle}
+.ma-you{font:700 15px Inter,sans-serif;fill:#8fb8ff}
+.ma-me{transition:transform .6s ease}
+.cache{cursor:pointer;transition:opacity .2s}
+.cache .ring{fill:none;stroke:var(--red);stroke-width:2;opacity:.6;transform-origin:center;animation:ring 2s infinite}
+@keyframes ring{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.8);opacity:0}}
+.cache.dim{opacity:.12;pointer-events:none}
+.cache.dim .ring{display:none}
+.ma-list{border-top:1px solid var(--line);padding:10px 14px calc(12px + env(safe-area-inset-bottom));background:#101012}
+.ma-list h4{margin:0 0 6px;font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.near{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);
+  color:#fff;padding:8px 0;text-align:left}
+.near:last-child{border:0}
+.near img{width:40px;height:30px;object-fit:cover;border-radius:6px;background:#000}
+.near span{flex:1;font-size:.92rem}
+.near small{display:block;color:var(--muted);font-size:.78rem}
+.near em{font-style:normal;color:var(--green);font-size:.82rem;white-space:nowrap}
+.cache-head{display:flex;gap:12px;align-items:center;margin:4px 0 12px}
+.cache-head img{width:96px;height:72px;object-fit:cover;border-radius:10px;background:#000}
+.badge{display:inline-block;background:rgba(47,210,122,.12);color:var(--green);border-radius:6px;padding:2px 8px;font-size:.78rem;font-weight:700}
+.after{background:#0d0d0f;border:1px dashed #3a3a42;border-radius:12px;padding:12px 14px;margin:12px 0;font-size:.88rem;color:#ddd}
+.after b{display:block;margin-bottom:6px;color:#fff}
+.after div{padding:2px 0}
+.timer{color:var(--red);font-weight:800}
+.coords{font-family:ui-monospace,Menlo,monospace;background:#0d0d0f;border-radius:10px;padding:14px;margin:14px 0;text-align:left;line-height:1.8}
+.redact{background:#e8e8e8;color:transparent;border-radius:2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.4}}
+.ma-zoom{position:absolute;right:12px;top:12px;display:grid;gap:6px}
+.ma-zoom button:focus{outline:none}
+.ma-zoom button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:rgba(20,20,22,.9);color:#fff;font-size:1.3rem}
+.ma-attr{position:absolute;right:6px;bottom:4px;font-size:10px;color:#888}
+.note{font-size:.8rem;color:var(--muted);margin:-4px 0 12px}
+.hpin{cursor:pointer}
+
+/* ===== STOP SCREEN (what this page can see about you) ===== */
+.stop{position:fixed;inset:0;z-index:48;background:#050506;color:#e8e8e8;overflow-y:auto;display:none;
+  font:14px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.stop.on{display:block}
+.stop .in{max-width:560px;margin:0 auto;padding:calc(28px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom))}
+.stop .warn{display:flex;align-items:center;gap:10px;color:#ff3b3b;font-weight:700;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase}
+.stop .warn i{width:12px;height:12px;border-radius:50%;background:#ff3b3b;box-shadow:0 0 12px #ff3b3b;animation:pulse 1s infinite}
+.stop .sub{color:#8a8a90;margin:4px 0 18px}
+.stop .rows{border-top:1px solid #222;border-bottom:1px solid #222;padding:8px 0;margin-bottom:14px}
+.stop .r{display:flex;justify-content:space-between;gap:16px;padding:5px 0;opacity:0;transform:translateY(4px);transition:.25s}
+.stop .r.on{opacity:1;transform:none}
+.stop .r span:first-child{color:#8a8a90;white-space:nowrap}
+.stop .r span:last-child{text-align:right;color:#fff}
+.stop .saved{color:#ff3b3b;font-weight:700;opacity:0;transition:.3s}
+.stop .saved.on{opacity:1}
+.stop .msg{font-family:Inter,system-ui,sans-serif;margin-top:22px;opacity:0;transition:.5s}
+.stop .msg.on{opacity:1}
+.stop .msg h3{font-family:Anton,Impact,sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(1.7rem,7vw,2.4rem);line-height:1.05;margin:0 0 12px;color:#fff}
+.stop .msg p{color:#cfcfd4;font-size:1rem;margin:0 0 12px}
+.stop .msg b{color:#fff}
+.stop .msg .src{font-size:.78rem;color:#77777d}
+.stop .next{display:block;width:100%;margin-top:18px;background:#fff;color:#000;border:0;border-radius:12px;padding:15px;font:800 1rem Inter,sans-serif}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <a class="brand" href="#" data-hook="logo">
+    <svg class="logo" viewBox="0 0 60 60" aria-hidden="true">
+      <circle cx="30" cy="28" r="25" fill="none" stroke="#fff" stroke-width="4"/>
+      <path d="M17 18l8 8M25 18l-8 8M35 18l8 8M43 18l-8 8" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M16 36q14 12 28 0" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M22 52v6M30 53v7M38 52v5" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="brand-name display">Narkocaching<span>.cz</span></div>
+      <div class="brand-sub">Drogy. Bez kontaktu. <b>Po celé Praze.</b></div>
+    </div>
+  </a>
+  <button class="burger" aria-label="Menu" data-hook="menu"><i></i><i></i><i></i></button>
+</header>
+
+<section class="hero">
+  <div>
+    <h1 class="display">Objednej.<br>Najdi.<br>Vyzvedni.</h1>
+    <span class="underline"></span>
+    <p>První služba v Česku, která ti doručí drogy bez dealera. Přes GPS. Diskrétně. Rychle. Anonymně.</p>
+    <button class="cta display" data-hook="cta">Zobrazit nabídku <span aria-hidden="true">→</span></button>
+  </div>
+  <div class="figure" aria-hidden="true">
+    <img src="hero.jpg" alt="" width="880" height="1168">
+  </div>
+</section>
+
+<section class="features">
+  <div class="feat">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 14q16-6 32 0v6q-2 10-12 8l-4-5-4 5Q6 30 4 20z" fill="#fff"/><ellipse cx="13" cy="19" rx="4" ry="2.5" fill="#000"/><ellipse cx="27" cy="19" rx="4" ry="2.5" fill="#000"/></svg>
+    <div><h3 class="display">Anonymně</h3><p>Žádné osobní údaje.</p></div>
+  </div>
+  <div class="feat">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><text x="20" y="31" text-anchor="middle" font-family="Anton,sans-serif" font-size="32" fill="#fff">₿</text></svg>
+    <div><h3 class="display">Platba v BTC</h3><p>Rychlá a bezpečná.</p></div>
+  </div>
+  <div class="feat">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M23 2L8 23h10l-3 15 17-23H22z" fill="#fff"/></svg>
+    <div><h3 class="display">Rychle</h3><p>Vyzvednutí do 30 min.</p></div>
+  </div>
+</section>
+
+<section class="live" id="mapa">
+  <svg class="map" data-hook="map" viewBox="80 210 1030 594" role="img" aria-label="Mapa Prahy s keškami">
+    <image href="praha.jpg" width="1188" height="1053"/>
+    <rect x="80" y="210" width="1030" height="594" fill="url(#vign)"/>
+    <defs><radialGradient id="vign" cx="50%" cy="50%" r="70%"><stop offset=".55" stop-color="#0b0b0c" stop-opacity="0"/><stop offset="1" stop-color="#0b0b0c" stop-opacity=".95"/></radialGradient>
+      <filter id="glow"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    <text x="560" y="520" font-family="Anton,sans-serif" font-size="66" fill="#b9b9c0" letter-spacing="4" text-anchor="middle" opacity=".85">PRAHA</text>
+    <g id="home-pins" filter="url(#glow)"></g>
+    <text x="1104" y="798" font-family="Inter,sans-serif" font-size="15" fill="#777" text-anchor="end">© OpenStreetMap</text>
+  </svg>
+  <div class="stats">
+    <h4 class="display"><span class="dot"></span>Online výdej</h4>
+    <div class="stat"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M4 9l10-5 10 5v10l-10 5-10-5zM4 9l10 5 10-5M14 14v10" fill="none" stroke="#fff" stroke-width="2"/></svg><span><b id="hides">37</b> aktivních úkrytů</span></div>
+    <div class="stat"><svg viewBox="0 0 28 28" aria-hidden="true"><circle cx="9" cy="10" r="4" fill="#fff"/><circle cx="19" cy="10" r="4" fill="#fff"/><path d="M2 24q7-10 14 0M12 24q7-10 14 0" fill="#fff"/></svg><span><b id="users">1 842</b> uživatelů online</span></div>
+    <div class="stat"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M16 2L5 16h7l-2 10 12-16h-7z" fill="#fff"/></svg><span>Průměrné doručení: do 30 min</span></div>
+    <div class="bar"></div>
+  </div>
+</section>
+
+<section class="offer" id="offer">
+  <h2 class="display">Aktuální nabídka</h2>
+  <div class="grid">
+    <button class="card" data-hook="product" data-p="koks">
+      <img class="img" src="p-koks.jpg" alt="" width="320" height="240">
+      <div><h3 class="display">Mouka</h3></div>
+      <span class="qty">1 g</span>
+      <div class="row"><span class="price display">4 000 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
+    </button>
+    <button class="card" data-hook="product" data-p="trava">
+      <img class="img" src="p-trava.jpg" alt="" width="320" height="240">
+      <div><h3 class="display">Zelí</h3></div>
+      <span class="qty">1 g</span>
+      <div class="row"><span class="price display">600 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
+    </button>
+    <button class="card" data-hook="product" data-p="pernik">
+      <img class="img" src="p-pernik.jpg" alt="" width="320" height="240">
+      <div><h3 class="display">Peří</h3></div>
+      <span class="qty">1 g</span>
+      <div class="row"><span class="price display">1 500 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
+    </button>
+    <button class="card" data-hook="product" data-p="extaze">
+      <img class="img" src="p-extaze.jpg" alt="" width="320" height="240">
+      <div><h3 class="display">Cukr</h3></div>
+      <span class="qty">1 ks</span>
+      <div class="row"><span class="price display">400 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
+    </button>
+    <button class="card" data-hook="product" data-p="lsd">
+      <img class="img" src="p-lsd.jpg" alt="" width="320" height="240">
+      <div><h3 class="display">Papír</h3></div>
+      <span class="qty">1 ks</span>
+      <div class="row"><span class="price display">350 Kč</span><span class="cart"><svg viewBox="0 0 24 24"><path d="M2 3h3l3 12h11l2-8H7" fill="none" stroke="#e4232d" stroke-width="2.4"/><circle cx="9" cy="20" r="1.8" fill="#e4232d"/><circle cx="18" cy="20" r="1.8" fill="#e4232d"/></svg></span></div>
+    </button>
+  </div>
+</section>
+
+<button class="banner" data-hook="banner">
+  <span class="paper">
+    <span class="tag">Novinka</span>
+    <span class="txt">Nyní i v Brně a Ostravě!</span>
+    <span class="arrow" aria-hidden="true">→</span>
+  </span>
+</button>
+
+<section class="how" id="jak">
+  <h2 class="display">Jak to funguje</h2>
+  <ol>
+    <li><b>Otevři mapu</b><span>Uvidíš kešky kolem sebe. Jako auta v taxi appce, jen místo aut zboží.</span></li>
+    <li><b>Vyber kešku</b><span>Zelí 300 m od tebe? Cukr za rohem? Klikni a zvol množství.</span></li>
+    <li><b>Zaplať v BTC</b><span>Bez registrace. Bez jména. Keška je pak 30 minut jen tvoje.</span></li>
+    <li><b>Dostaneš souřadnice</b><span>Přesné GPS, fotku místa a nápovědu, třeba „pod košem u lavičky“.</span></li>
+    <li><b>Vyzvedni</b><span>Bez kontaktu. Nikoho nepotkáš.</span></li>
+  </ol>
+  <button class="cta display" data-hook="openmap">Otevřít mapu kešek <span aria-hidden="true">→</span></button>
+</section>
+
+<footer>
+  © 2026 Narkocaching.cz
+</footer>
+
+</div>
+
+
+
+<section class="mapapp" id="mapapp" aria-label="Mapa kešek">
+  <div class="ma-top">
+    <button class="ma-back" id="ma-back" aria-label="Zpět">←</button>
+    <b class="display">Mapa kešek</b>
+    <span class="ma-live"><span class="dot"></span><span id="ma-count">0</span> aktivních</span>
+  </div>
+  <div class="ma-where"><span>📍 Kde jsi?</span><select id="ma-zone"><option value="0">Praha 1 – Staré Město</option><option value="1">Praha 2 – Vinohrady</option><option value="2" selected>Praha 3 – Žižkov</option><option value="3">Praha 5 – Smíchov</option><option value="4">Praha 6 – Dejvice</option><option value="5">Praha 7 – Holešovice</option><option value="6">Praha 8 – Karlín</option><option value="7">Praha 10 – Vršovice</option></select></div>
+  <div class="chips" id="ma-chips"></div>
+  <div class="ma-map">
+    <svg id="ma-svg" viewBox="0 0 1188 1053" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Mapa kešek v Praze">
+      <defs><clipPath id="cc"><circle r="21"/></clipPath></defs>
+      <image href="praha.jpg" width="1188" height="1053"/>
+      <g id="ma-caches"></g>
+      <g id="ma-me" class="ma-me"><circle r="44" fill="#2d7cf6" opacity=".18"/><circle r="13" fill="#2d7cf6" stroke="#fff" stroke-width="5"/><text y="-22" text-anchor="middle" class="ma-you">TY</text></g>
+    </svg>
+    <div class="ma-zoom"><button id="zin" aria-label="Přiblížit">+</button><button id="zout" aria-label="Oddálit">−</button></div>
+    <div class="ma-attr">© OpenStreetMap</div>
+  </div>
+  <div class="ma-list"><h4>Nejblíž tobě</h4><div id="ma-near"></div></div>
+</section>
+<div class="toast" id="toast"></div>
+<div class="sheet-bg" id="sheetbg"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Objednávka">
+  <button class="x" id="sheetx" aria-label="Zavřít">×</button>
+  <div id="sheetbody"></div>
+</section>
+
+<section class="stop" id="stop" role="dialog" aria-modal="true" aria-label="Transakce zastavena">
+  <div class="in">
+    <div class="warn"><i></i>Transakce zastavena</div>
+    <div class="sub" id="stopSub">Kód 0x4F2 · relace ověřena</div>
+    <div class="rows" id="stopRows"></div>
+    <div class="saved" id="stopSaved">■ ÚDAJE ULOŽENY</div>
+    <div class="msg" id="stopMsg">
+      <h3>Tenhle web si je jen ukázal.<br>Skutečný by si je uložil.</h3>
+      <p>Všechno výše tvůj telefon prozradí každé stránce, kterou otevřeš. Tahle stránka to nikam neposlala. Ta, na kterou jsi chtěl jít doopravdy, by k tomu měla i tvou IP adresu a transakci v blockchainu.</p>
+      <p>V roce 2017 nizozemská policie potají převzala darkwebové tržiště <b>Hansa</b> a zhruba měsíc ho dál provozovala, jako by se nic nestalo. Sbírala přitom údaje o kupujících.</p>
+      <p><b>Nevíš, kdo je na druhé straně. Dealer, podvodník, nebo policie.</b></p>
+      <p class="src">Zdroj: Europol, operace Bayonet (2017).</p>
+    </div>
+  </div>
+</section>
+<div class="glitch" id="glitch"></div>
+
+<!-- REVEAL -->
+<section class="reveal" id="reveal" role="dialog" aria-modal="true" aria-labelledby="rv-title">
+  <div class="rv">
+    <span class="stamp">Preventivní kampaň</span>
+    <h2 id="rv-title">Objednej. Najdi. <s>Vyzvedni.</s><br>Prohraj.</h2>
+    <p class="lead">Tohle není e-shop. Nic se tu neprodává. Ale přesně takhle vypadají weby, přes které se drogy v Česku opravdu shánějí. A přesně tolik o nich víš: nic.</p>
+
+    <div class="box hit" id="hit" hidden>
+      <div class="kicker" id="hit-kicker">Kliknul jsi na</div>
+      <h3 id="hit-title"></h3>
+      <p id="hit-text"></p>
+    </div>
+
+    <div class="facts">
+      <div class="box">
+        <span class="big">„Anonymně“</span>
+        <p>Platba v bitcoinech není anonymní. Každá transakce je navždy zapsaná ve veřejném blockchainu a dá se dohledat.</p>
+      </div>
+      <div class="box">
+        <span class="big">„Bez dealera“</span>
+        <p>Dealer tam je pořád. Jen ho nevidíš. Nevíš, kdo balíček připravil, z čeho, ani kdo ten úkryt sleduje.</p>
+      </div>
+      <div class="box">
+        <span class="big">„37 úkrytů“</span>
+        <p>Čísla na tomhle webu jsou vymyšlená. Stejně jako na těch skutečných. Ani tam ti nikdo nic nezaručí.</p>
+      </div>
+      <div class="box">
+        <span class="big">„Do 30 min“</span>
+        <p>Zaplatíš předem a úkryt může být prázdný. Reklamace neexistuje. Policii to nenahlásíš.</p>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3>Našel jsi podezřelý balíček?</h3>
+      <p>Nesahej na něj a zavolej policii na 158. Kešku nemusí najít jen ten, kdo zaplatil. Může ji najít i dítě nebo pes.</p>
+    </div>
+
+    <div class="box">
+      <h3>Nejnebezpečnější část „nabídky“ je to, co v ní není napsané</h3>
+      <p>Na ulici ani v úkrytu nikdo nekontroluje složení ani dávku. Neznámé příměsi a nečekaně silné dávky patří k nejčastějším důvodům otrav a předávkování.</p>
+    </div>
+
+    <div class="help">
+      <h3>Když potřebuješ pomoc</h3>
+      <ul>
+        <li><a href="tel:155">155</a><span>Záchranná služba, když jde o život</span></li>
+        <li><a href="tel:116111">116 111</a><span>Linka bezpečí, pro děti a mladé do 26 let, zdarma a nonstop</span></li>
+        <li><a href="tel:116123">116 123</a><span>Linka první psychické pomoci</span></li>
+        <li><a href="https://www.drogy-info.cz" target="_blank" rel="noopener">drogy-info.cz</a><span>Ověřené informace o drogách a mapa kontaktních center</span></li>
+      </ul>
+    </div>
+
+    <div class="actions">
+      <button class="btn red" id="share">Pošli to dál</button>
+      <button class="btn ghost" id="back">Zpět na „web“</button>
+    </div>
+    <p class="small" id="share-msg" hidden>Odkaz zkopírován.</p>
+    <p class="small">Tento web je součástí preventivní kampaně. Neobsahuje žádnou nabídku, neshromažďuje osobní údaje a nepřijímá platby.</p>
+  </div>
+</section>
+
+<noscript><style>.reveal{opacity:1;visibility:visible;position:static}</style></noscript>
+
+<script>
+(function(){
+  function fit(){ document.documentElement.style.setProperty('--z', window.innerWidth <= 720 ? (window.innerWidth/470).toFixed(4) : 1); }
+  fit(); window.addEventListener('resize', fit);
+
+  var P = {
+    koks:  {n:'Mouka', a:'koks',   price:4000, unit:'g',  q:[1,2,5],
+      x:'Kokain z ulice bývá ředěný. Často se v něm najde levamisol, veterinární lék proti parazitům, který může zničit bílé krvinky. Kokain zvyšuje riziko infarktu a mrtvice i u mladých lidí bez potíží se srdcem.'},
+    trava: {n:'Zelí',  a:'tráva',  price:600,  unit:'g',  q:[1,3,5],
+      x:'V Evropě se opakovaně zachytila tráva postříkaná syntetickými kanabinoidy. Nepoznáš je podle vzhledu ani podle vůně a mohou způsobit křeče, psychózu nebo kolaps.'},
+    pernik:{n:'Peří',  a:'perník', price:1500, unit:'g',  q:[1,2,5],
+      x:'Pervitin z neznámé varny. Nikdo neví, co v něm zůstalo z výroby. Závislost se rozvíjí rychle a poškozuje srdce, zuby i psychiku.'},
+    extaze:{n:'Cukr',  a:'extáze', price:400,  unit:'ks', q:[1,3,5],
+      x:'Množství MDMA se liší tabletu od tablety a některé jsou extrémně silné. Jiné obsahují úplně jiné látky, například PMMA, které působí později a svádí k další dávce. Přehřátí organismu může zabít.'},
+    lsd:   {n:'Papír', a:'LSD',    price:350,  unit:'ks', q:[1,2,5],
+      x:'Papírky prodávané jako LSD mohou obsahovat látky ze skupiny NBOMe, které jsou nebezpečné už v nepatrném množství a mají na svědomí i úmrtí.'}
+  };
+  var KEYS = Object.keys(P);
+  var ZONES = [{n:'Praha 1',d:'Staré Město',x:481,y:481},{n:'Praha 2',d:'Vinohrady',x:673,y:699},{n:'Praha 3',d:'Žižkov',x:827,y:545},{n:'Praha 5',d:'Smíchov',x:268,y:799},{n:'Praha 6',d:'Dejvice',x:151,y:254},{n:'Praha 7',d:'Holešovice',x:676,y:200},{n:'Praha 8',d:'Karlín',x:815,y:381},{n:'Praha 10',d:'Vršovice',x:932,y:799}];
+  var BTC_CZK = 2150000;               // fake display rate
+  var M_PER_UNIT = 6.133, WALK = 80;   // map px -> metres, metres per minute
+
+  /* fictional caches on land (pixel positions on praha.jpg), deterministic */
+  var SPOTS = [[549, 577, "extaze"], [296, 481, "trava"], [206, 791, "koks"], [684, 438, "extaze"], [621, 151, "trava"], [954, 611, "extaze"], [429, 604, "trava"], [612, 646, "extaze"], [124, 172, "pernik"], [222, 348, "koks"], [1028, 823, "koks"], [322, 891, "koks"], [717, 764, "pernik"], [995, 215, "koks"], [1054, 756, "extaze"], [730, 199, "extaze"], [939, 932, "lsd"], [215, 944, "trava"], [677, 810, "trava"], [895, 313, "trava"], [488, 512, "koks"], [520, 189, "koks"], [821, 434, "extaze"], [398, 250, "koks"], [240, 509, "lsd"], [136, 330, "extaze"], [434, 725, "lsd"], [153, 115, "pernik"], [785, 921, "koks"], [550, 414, "koks"]];
+  var seed = 7; function rnd(){ seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+  var CACHES = SPOTS.map(function(s){
+    var p = s[2];
+    return {id:'K' + (100 + Math.floor(rnd()*900)).toString(36).toUpperCase(), p:p, x:s[0], y:s[1],
+            stock: P[p].unit === 'g' ? 1 + Math.floor(rnd()*5) : 1 + Math.floor(rnd()*6)};
+  });
+
+  var me = 2, filter = null, order = null, shown = false, touched = false;
+  var $ = function(id){ return document.getElementById(id); };
+  var fmt = function(n){ return n.toLocaleString('cs-CZ') + ' Kč'; };
+  var NS = 'http://www.w3.org/2000/svg';
+
+  function zoneOf(c){ var best=0, d=1e9; ZONES.forEach(function(z,i){ var k=Math.hypot(z.x-c.x,z.y-c.y); if(k<d){d=k;best=i;} }); return ZONES[best]; }
+  function dist(c){ var z=ZONES[me]; var m=Math.round(Math.hypot(z.x-c.x, z.y-c.y)*M_PER_UNIT/10)*10; return {m:Math.max(m,60), min:Math.max(1,Math.ceil(m/WALK))}; }
+  function dtxt(d){ return (d.m >= 1000 ? (d.m/1000).toFixed(1).replace('.',',')+' km' : d.m+' m') + ' · ' + d.min + ' min pěšky'; }
+
+  /* ---------- toast ---------- */
+  var tt;
+  function toast(msg){ var t=$('toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(tt); tt=setTimeout(function(){t.classList.remove('on');},2200); }
+
+  /* ---------- map app ---------- */
+  function drawCaches(){
+    var g = $('ma-caches'); g.innerHTML = '';
+    CACHES.forEach(function(c){
+      var el = document.createElementNS(NS,'g');
+      el.setAttribute('class','cache' + (filter && c.p!==filter ? ' dim' : ''));
+      el.setAttribute('transform','translate('+c.x.toFixed(1)+' '+c.y.toFixed(1)+')');
+      el.innerHTML = '<circle class="ring" r="25"/><circle r="25" fill="#111" stroke="#e4232d" stroke-width="4"/>' +
+        '<image href="p-'+c.p+'.jpg" x="-21" y="-21" width="42" height="42" preserveAspectRatio="xMidYMid slice" clip-path="url(#cc)"/>';
+      el.addEventListener('pointerdown', function(ev){ ev.stopPropagation(); });
+      el.addEventListener('click', function(){ cacheSheet(c); });
+      g.appendChild(el);
+    });
+    var vis = CACHES.filter(function(c){ return !filter || c.p===filter; });
+    $('ma-count').textContent = vis.length;
+    var near = vis.slice().sort(function(a,b){ return dist(a).m - dist(b).m; }).slice(0,3);
+    $('ma-near').innerHTML = near.map(function(c){
+      var d=P[c.p], k=dist(c);
+      return '<button class="near" data-c="'+c.id+'"><img src="p-'+c.p+'.jpg" alt=""><span>'+d.n+' · keška #'+c.id+'<small>'+zoneOf(c).n+' – '+zoneOf(c).d+'</small></span><em>'+dtxt(k).split(' · ')[0]+'</em></button>';
+    }).join('');
+    Array.prototype.forEach.call(document.querySelectorAll('#ma-near [data-c]'), function(b){
+      b.onclick = function(){ cacheSheet(CACHES.filter(function(c){return c.id===b.dataset.c;})[0]); };
+    });
+    var z = ZONES[me];
+    $('ma-me').style.transform = 'translate('+z.x+'px,'+z.y+'px)';
+  }
+
+  /* pan + zoom of the real map */
+  var view = {cx:0, cy:0, w:560};
+  function applyView(){
+    var svg=$('ma-svg'), r=svg.getBoundingClientRect(), asp=(r.height||1)/(r.width||1);
+    view.w=Math.max(300,Math.min(1188,view.w)); var h=view.w*asp;
+    view.cx=Math.max(view.w/2,Math.min(1188-view.w/2,view.cx)); view.cy=Math.max(Math.min(h/2,526),Math.min(1053-h/2,view.cy));
+    svg.setAttribute('viewBox',(view.cx-view.w/2)+' '+(view.cy-h/2)+' '+view.w+' '+h);
+  }
+  function centerOnMe(){ view.cx=ZONES[me].x; view.cy=ZONES[me].y; applyView(); }
+  (function(){
+    var box=document.querySelector('.ma-map'), drag=null;
+    box.addEventListener('pointerdown',function(e){ drag={x:e.clientX,y:e.clientY,cx:view.cx,cy:view.cy}; box.setPointerCapture(e.pointerId); });
+    box.addEventListener('pointermove',function(e){ if(!drag) return; var k=view.w/box.clientWidth;
+      view.cx=drag.cx-(e.clientX-drag.x)*k; view.cy=drag.cy-(e.clientY-drag.y)*k; applyView(); });
+    box.addEventListener('pointerup',function(){ drag=null; });
+    box.addEventListener('wheel',function(e){ e.preventDefault(); view.w*= e.deltaY>0?1.15:0.87; applyView(); },{passive:false});
+    $('zin').onclick=function(){ view.w*=0.75; applyView(); };
+    $('zout').onclick=function(){ view.w*=1.33; applyView(); };
+    $('zin').addEventListener('pointerdown',function(e){e.stopPropagation();}); $('zout').addEventListener('pointerdown',function(e){e.stopPropagation();});
+    window.addEventListener('resize',applyView);
+  })();
+
+  /* landing page pins = real caches inside the visible frame */
+  (function(){
+    var g=$('home-pins');
+    var pool=CACHES.filter(function(c){ return c.x>170 && c.x<1030 && c.y>390 && c.y<790 && !(Math.abs(c.x-560)<180 && c.y>430 && c.y<680); });
+    var pick=[pool[0]];   // spread pins out: greedy farthest-point
+    while (pick.length<5 && pick.length<pool.length){
+      var best=null, bd=-1;
+      pool.forEach(function(c){ if(pick.indexOf(c)>=0) return;
+        var d=Math.min.apply(null, pick.map(function(q){ return Math.hypot(q.x-c.x,q.y-c.y); }));
+        if(d>bd){ bd=d; best=c; } });
+      pick.push(best);
+    }
+    pick.forEach(function(c){
+      var el=document.createElementNS(NS,'g'); el.setAttribute('class','hpin');
+      el.setAttribute('transform','translate('+c.x+' '+(c.y-135)+') scale(2.6)');
+      el.innerHTML='<path d="M0 0c-18 0-26 14-22 26L0 52l22-26C26 14 18 0 0 0z" fill="#c4151e"/><circle cx="0" cy="20" r="14" fill="#e4232d"/><path d="M-6 16l6-4 6 4v8l-6 4-6-4z" fill="none" stroke="#fff" stroke-width="2"/>';
+      el.addEventListener('click',function(ev){ ev.stopPropagation(); touched=true; openMap(); setTimeout(function(){ cacheSheet(c); },350); });
+      g.appendChild(el);
+    });
+  })();
+  function chips(){
+    var h = '<button data-f="" class="'+(filter?'':'sel')+'">Vše</button>';
+    KEYS.forEach(function(k){ h += '<button data-f="'+k+'" class="'+(filter===k?'sel':'')+'">'+P[k].n+'</button>'; });
+    $('ma-chips').innerHTML = h;
+    Array.prototype.forEach.call(document.querySelectorAll('#ma-chips [data-f]'), function(b){
+      b.onclick = function(){ filter = b.dataset.f || null; chips(); drawCaches(); };
+    });
+  }
+  function openMap(f){
+    touched = true; filter = f || null; chips(); drawCaches();
+    $('mapapp').classList.add('on'); document.body.classList.add('locked'); requestAnimationFrame(centerOnMe);
+    if (f) toast('Kešky se zbožím ' + P[f].n + ' kolem tebe');
+  }
+  function closeMap(){ $('mapapp').classList.remove('on'); document.body.classList.remove('locked'); }
+  $('ma-back').onclick = closeMap;
+  $('ma-zone').onchange = function(){ me = +this.value; drawCaches(); centerOnMe(); };
+
+  /* ---------- sheet ---------- */
+  function sheet(html){ $('toast').classList.remove('on'); $('sheetbody').innerHTML = html; $('sheet').classList.add('on'); $('sheetbg').classList.add('on'); $('sheet').scrollTop=0; }
+  function closeSheet(){ $('sheet').classList.remove('on'); $('sheetbg').classList.remove('on'); clearInterval(tick); }
+  $('sheetx').onclick = closeSheet; $('sheetbg').onclick = closeSheet;
+  function steps(k){ var h='<div class="steps">'; for(var i=1;i<=3;i++) h+='<i class="'+(i<=k?'on':'')+'"></i>'; return h+'</div>'; }
+
+  function cacheSheet(c){
+    var d = P[c.p], z = zoneOf(c), k = dist(c);
+    var opts = d.q.filter(function(q){ return q <= c.stock; }); if (!opts.length) opts=[1];
+    var sel = opts[0];
+    function render(){
+      var h = steps(1) + '<div class="cache-head"><img src="p-'+c.p+'.jpg" alt=""><div><h3 class="display">'+d.n+'</h3>' +
+        '<p class="muted" style="margin:0">Keška #'+c.id+' · '+fmt(d.price)+' / 1 '+d.unit+'</p><span class="badge">Zbývá '+c.stock+' '+d.unit+'</span></div></div>';
+      h += '<div class="sumrow"><span>Oblast</span><span>'+z.n+' – '+z.d+'</span></div>';
+      h += '<div class="sumrow"><span>Od tebe</span><span>'+dtxt(k)+'</span></div><br><p class="note">Na mapě je přibližná poloha. Přesné místo a nápovědu dostaneš po zaplacení.</p>';
+      h += '<p class="muted">Množství</p><div class="opts">';
+      opts.forEach(function(q){ h += '<button class="opt'+(q===sel?' sel':'')+'" data-q="'+q+'"><b>'+q+' '+d.unit+'</b><small>'+fmt(q*d.price)+'</small></button>'; });
+      h += '</div><button class="go" id="next">Rezervovat kešku · '+fmt(sel*d.price)+'</button>';
+      sheet(h);
+      Array.prototype.forEach.call(document.querySelectorAll('#sheet [data-q]'), function(b){ b.onclick=function(){ sel=+b.dataset.q; render(); }; });
+      $('next').onclick = function(){ order = {c:c, qty:sel, total:sel*d.price}; paySheet(); };
+    }
+    render();
+  }
+
+  var tick;
+  function paySheet(){
+    var c = order.c, d = P[c.p], z = zoneOf(c);
+    var btc = (order.total/BTC_CZK).toFixed(5).replace('.', ',');
+    var h = steps(2) + '<h3 class="display">Rekapitulace</h3><p class="muted">Keška je rezervovaná na <span class="timer" id="timer">30:00</span>. Bez registrace, bez jména.</p>';
+    h += '<div class="sumrow"><span>'+d.n+' × '+order.qty+' '+d.unit+'</span><span>'+fmt(order.total)+'</span></div>';
+    h += '<div class="sumrow"><span>Keška</span><span>#'+c.id+' · '+z.n+'</span></div>';
+    h += '<div class="sumrow"><span>Od tebe</span><span>'+dtxt(dist(c))+'</span></div>';
+    h += '<div class="sumrow total"><span>Celkem</span><span>'+fmt(order.total)+'</span></div>';
+    h += '<div class="after"><b>Po zaplacení dostaneš</b><div>📍 Přesné GPS souřadnice kešky</div><div>📷 Fotku místa</div><div>💬 Nápovědu, třeba „pod košem u lavičky“</div></div>';
+    h += '<div class="pay"><span class="btc">₿</span><span><b>Bitcoin (BTC)</b><small>≈ '+btc+' BTC · potvrzení do 10 min</small></span></div>';
+    h += '<label class="check"><input type="checkbox" id="age"> Je mi 18 let a objednávám na vlastní odpovědnost.</label>';
+    h += '<button class="go" id="pay" disabled>Zaplatit '+btc+' BTC</button><div class="secure">🔒 Šifrované spojení · anonymní platba</div>';
+    sheet(h);
+    var left = 1800; clearInterval(tick);
+    tick = setInterval(function(){ left--; var t=$('timer'); if(!t) return clearInterval(tick);
+      t.textContent = Math.floor(left/60) + ':' + ('0'+left%60).slice(-2); }, 1000);
+    $('age').onchange = function(){ $('pay').disabled = !this.checked; };
+    $('pay').onclick = function(){
+      clearInterval(tick);
+      sheet('<div class="spin"><i></i><b>Ověřuji platbu v síti…</b><p class="muted">Nezavírej okno.</p></div>');
+      setTimeout(function(){ closeSheet(); closeMap(); showStop(); }, 2400);
+    };
+  }
+
+
+  /* ---------- stop screen: only what the browser already exposes, nothing is sent anywhere ---------- */
+  function deviceInfo(){
+    var ua = navigator.userAgent, dev = 'neznámé zařízení', m;
+    if (/iPhone/.test(ua)) { m = ua.match(/OS (\d+)[_.](\d+)/); dev = 'iPhone' + (m ? ', iOS ' + m[1] + '.' + m[2] : ''); }
+    else if (/iPad/.test(ua)) { m = ua.match(/OS (\d+)[_.](\d+)/); dev = 'iPad' + (m ? ', iPadOS ' + m[1] + '.' + m[2] : ''); }
+    else if (/Android/.test(ua)) { m = ua.match(/Android (\d+(\.\d+)?)/); var mod = ua.match(/Android [^;]+; ([^;)]+)/); dev = (mod && !/wv|Linux/.test(mod[1]) ? mod[1].trim() + ', ' : '') + 'Android' + (m ? ' ' + m[1] : ''); }
+    else if (/Mac OS X/.test(ua)) dev = 'Mac';
+    else if (/Windows/.test(ua)) dev = 'Windows PC';
+    var br = /CriOS|Chrome/.test(ua) && !/Edg/.test(ua) ? 'Chrome' : /Edg/.test(ua) ? 'Edge' : /Firefox|FxiOS/.test(ua) ? 'Firefox' : /Safari/.test(ua) ? 'Safari' : 'prohlížeč';
+    return {dev: dev, br: br};
+  }
+  function showStop(){
+    var d = deviceInfo(), now = new Date(), z = order ? zoneOf(order.c) : null, pd = order ? P[order.c.p] : null;
+    var tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch(e){}
+    var rows = [
+      ['Zařízení', d.dev],
+      ['Prohlížeč', d.br],
+      ['Jazyk', (navigator.language || '').toLowerCase()],
+      ['Čas', now.toLocaleTimeString('cs-CZ', {hour:'2-digit', minute:'2-digit', second:'2-digit'}) + (tz ? ' · ' + tz : '')],
+      ['Obrazovka', screen.width + '×' + screen.height + ' @' + (window.devicePixelRatio || 1) + 'x']
+    ];
+    if (navigator.connection && navigator.connection.effectiveType) rows.push(['Připojení', navigator.connection.effectiveType.toUpperCase()]);
+    if (z) rows.push(['Oblast výdeje', z.n + ' – ' + z.d]);
+    if (order) rows.push(['Objednávka', pd.n + ' ' + order.qty + ' ' + pd.unit + ' · keška #' + order.c.id + ' · ' + fmt(order.total)]);
+    rows.push(['Relace', Math.random().toString(16).slice(2, 10).toUpperCase()]);
+    $('stopRows').innerHTML = rows.map(function(r){ return '<div class="r"><span>' + r[0] + '</span><span></span></div>'; }).join('');
+    var els = $('stopRows').querySelectorAll('.r');
+    rows.forEach(function(r, i){ els[i].lastChild.textContent = r[1]; });
+    ['stopSaved','stopMsg'].forEach(function(id){ $(id).classList.remove('on'); });
+    $('stop').classList.add('on'); $('stop').scrollTop = 0; document.body.classList.add('locked');
+    if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+    els.forEach(function(el, i){ setTimeout(function(){ el.classList.add('on'); }, 350 + i * 260); });
+    var t = 350 + els.length * 260;
+    setTimeout(function(){ $('stopSaved').classList.add('on'); }, t + 300);
+    setTimeout(function(){ $('stopMsg').classList.add('on'); }, t + 1600);
+    // no button: the campaign reveal follows on its own once the message has had time to sink in
+    setTimeout(function(){ $('stop').classList.remove('on'); open('pay'); }, t + 1600 + 12000);
+  }
+
+  /* ---------- reveal ---------- */
+  var KICK = { footer:'Chtěl jsi vědět, co to je', timer:'Byl jsi tu dost dlouho' };
+  function open(kind){
+    var t, x;
+    if (kind === 'pay' && order){
+      var d = P[order.c.p], z = zoneOf(order.c);
+      $('hit-kicker').textContent = 'Chtěl jsi zaplatit ' + fmt(order.total);
+      t = d.n + ' (' + d.a + ') ' + order.qty + ' ' + d.unit + ' z kešky #' + order.c.id + ', ' + z.n;
+      x = d.x + ' Souřadnice by ti přišly. Ale kdo tam balíček dal, nevíš. Kdo to místo sleduje, nevíš. A co v něm opravdu je, neví nikdo.';
+    } else {
+      $('hit-kicker').textContent = KICK[kind] || 'Kliknul jsi';
+      t = 'A to stačilo.';
+      x = 'Přesně tak snadno se to na skutečných webech začíná. Jenže tam pak nikdo nenapíše, co je pravda.';
+    }
+    $('hit-title').textContent = t; $('hit-text').textContent = x; $('hit').hidden = false;
+    var g=$('glitch'); g.classList.remove('flash'); void g.offsetWidth; g.classList.add('flash');
+    setTimeout(function(){
+      $('reveal').classList.add('on'); document.body.classList.add('locked'); shown = true;
+      $('back').focus({preventScroll:true}); $('reveal').scrollTop = 0;
+    }, 180);
+  }
+  function close(){ $('reveal').classList.remove('on'); document.body.classList.remove('locked'); }
+  $('back').addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape'){ close(); closeSheet(); } });
+
+  /* ---------- landing interactions ---------- */
+  function go(id){ document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+  document.addEventListener('click', function(e){
+    var el = e.target.closest('[data-hook]');
+    if (!el) return;
+    e.preventDefault(); touched = true;
+    switch (el.getAttribute('data-hook')){
+      case 'product': openMap(el.getAttribute('data-p')); break;
+      case 'pin': case 'map': case 'openmap': openMap(); break;
+      case 'cta': go('offer'); break;
+      case 'banner': toast('Brno a Ostrava: spuštění brzy.'); break;
+      case 'logo': window.scrollTo({top:0, behavior:'smooth'}); break;
+      case 'menu':
+        sheet('<div class="drawer"><a href="#" data-nav="map">Mapa kešek</a><a href="#offer" data-nav="offer">Nabídka</a><a href="#jak" data-nav="jak">Jak to funguje</a></div>');
+        Array.prototype.forEach.call(document.querySelectorAll('[data-nav]'), function(a){ a.onclick=function(ev){ ev.preventDefault(); closeSheet();
+          if (a.dataset.nav==='map') openMap(); else go(a.dataset.nav); }; });
+        break;
+      case 'footer': open('footer'); break;
+    }
+  });
+
+  // Visitors who only look and never start an order still get the message.
+  setTimeout(function(){ if (!shown && !touched) open('timer'); }, 90000);
+
+  var users = 1842;
+  setInterval(function(){ users += Math.round((Math.random() - .45) * 12); $('users').textContent = users.toLocaleString('cs-CZ'); }, 2500);
+
+  $('share').addEventListener('click', function(){
+    var url = location.href.split('#')[0];
+    if (navigator.share) { navigator.share({title:'Narkocaching', text:'Najdi si kešku.', url:url}).catch(function(){}); return; }
+    try { navigator.clipboard.writeText(url).then(function(){ $('share-msg').hidden = false; }); } catch(_) {}
+  });
+})();
+</script>
+</body>
+</html>
